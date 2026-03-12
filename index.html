@@ -36,7 +36,7 @@
     <div class="login-card">
         <h2 style="color: var(--blue);">Champion Login</h2>
         <input type="email" id="email-field" placeholder="Enter your email">
-        <button class="btn-main" onclick="processLogin()">Access Portal</button>
+        <button class="btn-main" onclick="startLogin()">Access Portal</button>
     </div>
 </div>
 
@@ -75,21 +75,21 @@
 </div>
 
 <script>
-    // USE YOUR PUBLISHED CSV LINK HERE
-    const DATA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    // THE VARIABLE NAME IS NOW "MY_SHEET_URL" TO MATCH YOUR ERRORS
+    const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
 
     let sheetData = [];
 
-    async function processLogin() {
+    async function startLogin() {
         const email = document.getElementById('email-field').value.trim().toLowerCase();
         if(!email) return alert("Please enter email");
 
         try {
-            const response = await fetch(DATA_URL);
+            const response = await fetch(MY_SHEET_URL);
             const text = await response.text();
             sheetData = text.split(/\r?\n/).map(row => row.split(','));
 
-            // Check if email exists in Column B (Index 1)
+            // Validation: Search Column B (Index 1) for email
             const user = sheetData.find(r => r[1] && r[1].toLowerCase().trim() === email);
 
             if (user) {
@@ -100,9 +100,10 @@
                 updateTasks(email);
                 updateLeaderboard();
             } else {
-                alert("Email not found!");
+                alert("Email not found in the Champions database!");
             }
         } catch (err) {
+            console.error(err);
             alert("Error connecting to Google Sheets.");
         }
     }
@@ -126,34 +127,7 @@
         const tbody = document.getElementById('leader-list');
         tbody.innerHTML = "";
 
-        // Calculate totals for all 100 Champions
         let scores = {};
         sheetData.slice(1).forEach(r => {
             let name = r[0];
-            let pts = parseInt(r[4]) || 0;
-            if(name) scores[name] = (scores[name] || 0) + pts;
-        });
-
-        // Sort by points
-        const sorted = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
-
-        sorted.forEach((name, i) => {
-            let rankColor = (i < 3) ? 'class="rank-gold"' : '';
-            tbody.innerHTML += `<tr>
-                <td ${rankColor}>#${i+1}</td>
-                <td>${name}</td>
-                <td><b>${scores[name]}</b></td>
-            </tr>`;
-        });
-    }
-
-    function switchTab(target) {
-        document.getElementById('view-tasks').classList.toggle('hidden', target !== 'tasks');
-        document.getElementById('view-leaderboard').classList.toggle('hidden', target !== 'leaderboard');
-        document.getElementById('tab-tasks').classList.toggle('active', target === 'tasks');
-        document.getElementById('tab-leader').classList.toggle('active', target === 'leaderboard');
-    }
-</script>
-
-</body>
-</html>
+            let pts = parseInt
