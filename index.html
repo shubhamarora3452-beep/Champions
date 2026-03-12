@@ -5,61 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Portal</title>
     <style>
-        :root { --blue: #00467f; --gray: #f4f4f4; }
-        body { font-family: sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #eee; }
+        :root { --blue: #00467f; }
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; color: #333; }
         .hidden { display: none !important; }
         
-        /* Box containers */
-        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        .dashboard-container { background: white; width: 100%; min-height: 100vh; display: block; }
+        /* Login Screen */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; text-align: center; }
         
-        /* Header */
-        .header { background: var(--blue); color: white; padding: 20px; text-align: center; position: relative; }
-        .logout-btn { position: absolute; top: 20px; right: 20px; background: none; color: white; border: 1px solid white; padding: 5px 10px; cursor: pointer; }
-        
-        /* Navigation */
-        .tabs { display: flex; background: #ddd; }
+        /* Dashboard */
+        header { background: var(--blue); color: white; padding: 20px; text-align: center; position: relative; }
+        .nav { display: flex; background: #ddd; }
         .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; }
-        .tab.active { background: white; border-bottom: 3px solid var(--blue); }
+        .tab.active { background: white; border-bottom: 4px solid var(--blue); }
 
-        /* Tables */
-        .content { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .container { padding: 20px; max-width: 900px; margin: auto; background: white; min-height: 80vh; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #f9f9f9; }
+        th { background: #eee; }
 
         input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; box-sizing: border-box; }
         .btn { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; }
+        .logout { position: absolute; right: 10px; top: 20px; background: none; border: 1px solid white; color: white; padding: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="login-box" class="card">
-        <h2 style="color: var(--blue);">Champion Login</h2>
-        <input type="email" id="email-field" placeholder="Enter email address">
-        <button class="btn" onclick="login()">Access Portal</button>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="color:var(--blue)">Champion Login</h2>
+            <input type="email" id="user-email" placeholder="email@example.com">
+            <button class="btn" onclick="processLogin()">Access Dashboard</button>
+        </div>
     </div>
 
-    <div id="dashboard-box" class="dashboard-container hidden">
-        <div class="header">
-            <button class="logout-btn" onclick="location.reload()">LOGOUT</button>
+    <div id="dashboard-screen" class="hidden">
+        <header>
+            <button class="logout" onclick="location.reload()">LOGOUT</button>
             <h1>CHAMPIONS 2026</h1>
-            <p>Welcome, <span id="user-name">Champion</span></p>
-        </div>
-        
-        <div class="tabs">
-            <button id="t1" class="tab active" onclick="showTab('tasks')">TASKS</button>
-            <button id="t2" class="tab" onclick="showTab('leaderboard')">LEADERBOARD</button>
+            <p>Welcome, <span id="display-name">...</span></p>
+        </header>
+
+        <div class="nav">
+            <button id="btn-t" class="tab active" onclick="tab('tasks')">MY TASKS</button>
+            <button id="btn-l" class="tab" onclick="tab('leaderboard')">LEADERBOARD</button>
         </div>
 
-        <div class="content">
-            <div id="v-tasks">
+        <div class="container">
+            <div id="view-t">
+                <h3>Your Active Challenges</h3>
                 <table>
-                    <thead><tr><th>Task</th><th>Points</th><th>Status</th></tr></thead>
-                    <tbody id="task-body"></tbody>
+                    <thead><tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
+                    <tbody id="table-t"></tbody>
                 </table>
             </div>
-            <div id="v-lead" class="hidden">
+
+            <div id="view-l" class="hidden">
+                <h3>Global Leaderboard</h3>
                 <table>
-                    <thead><tr><th>Rank</th><th>Name</th><th>Total</th></tr></thead>
-                    <tbody id="lead-body"></tbody>
+                    <thead><tr><th>Rank</th><th>Name</th><th>Total Points</th></tr></thead>
+                    <tbody id="table-l"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // YOUR PUBLISHED CSV LINK
+    const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    
+    let csvData = [];
+
+    async function processLogin() {
+        const email = document.getElementById('user-email').value.trim().toLowerCase();
+        if(!email) return alert("Please enter email");
+
+        try {
+            const res = await fetch(SHEET_LINK);
+            const text = await res.text();
+            
+            // Convert text to rows
+            csvData = text.split(/\r?\n/).map(line => line.split(','));
+
+            // Find user in Column B (Index 1)
+            const userMatch = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
+
+            if (userMatch) {
+                // Change UI
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                document.getElementById('display-name').innerText = userMatch[0];
+
+                loadTasks(email);
+                loadLeaderboard();
+            } else {
+                alert("Email not found. Make sure it matches Column B in your Google Sheet.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error: Check your Sheet link or Internet connection.");
+        }
+    }
+
+    function loadTasks(userEmail) {
+        const tbody = document.getElementById('table-t');
+        tbody.innerHTML = "";
+        csvData.slice(1).forEach(row => {
+            if(row[1] && row[1].toLowerCase().trim() === userEmail) {
+                tbody.innerHTML += `<tr>
+                    <td><b>${row[2] || 'Task'}</b></td>
+                    <td>${row[3] || 'General'}</td>
+                    <td>${row[4] || '0'}</td>
+                    <td>${row[5] || 'Active'}</td>
+                </tr>`;
+            }
+        });
+    }
+
+    function loadLeaderboard() {
+        const tbody = document.getElementById('table-l');
+        tbody.innerHTML = "";
+
+        let totals = {};
+        csvData.slice(1).forEach(row => {
+            let name = row[0];
+            let pts = parseInt(row[4]) || 0;
+            if(name) totals[name] = (totals[name] || 0) + pts;
+        });
+
+        const sorted = Object.keys(totals).sort((a,b) => totals[b] - totals[a]);
+
+        sorted.forEach((name, i) => {
+            tbody.innerHTML += `<tr><td>#${i+1}</td><td>${name}</td><td><b>${totals[name]}</b></td></tr>`;
+        });
+    }
+
+    function tab(name) {
+        document.getElementById('view-t').classList.toggle('hidden', name !== 'tasks');
+        document.getElementById('view-l').classList.toggle('hidden', name !== 'leaderboard');
+        document.getElementById('btn-t').classList.toggle('active', name === 'tasks');
+        document.getElementById('btn-l').classList.toggle('active', name === 'leaderboard');
+    }
+</script>
+</body>
+</html>
