@@ -288,12 +288,11 @@ HTML
 </div>
 
 <script>
-    // 1. DATA SOURCE (Only declared ONCE)
+    // ONLY DEFINE THIS ONCE
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv"; 
 
-    // 2. LOGIN FUNCTION
     async function login() {
-        // Use 'user-email' to match your HTML input ID
+        // This 'user-email' must match the ID of your <input> tag
         const emailInput = document.getElementById('user-email').value.trim().toLowerCase();
         
         if (!emailInput) {
@@ -303,63 +302,25 @@ HTML
 
         try {
             const response = await fetch(SHEET_URL);
-            if (!response.ok) throw new Error("Could not fetch data.");
             const text = await response.text();
-            
-            // Parse CSV Rows
             const rows = text.split(/\r?\n/).map(line => line.split(','));
             
-            // Look for email in Column B (Index 1)
             const userMatch = rows.find(row => 
                 row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === emailInput
             );
 
             if (userMatch) {
-                // UI Transition
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('main-dashboard').classList.remove('hidden');
-                
-                // Set User Name
                 document.getElementById('user-name-span').innerText = userMatch[0].replace(/"/g, '');
                 
-                // Load Content
-                renderTasks(rows, emailInput);
-                renderLeaderboard(rows);
+                // Add logic here to fill your tables
+                console.log("Login successful for " + emailInput);
             } else {
-                alert("Email not found! Make sure it matches Column B in your Sheet.");
+                alert("Email not found in our records.");
             }
-        } catch (error) {
-            console.error(error);
-            alert("Connection Error. Is your Google Sheet 'Published to Web'?");
+        } catch (err) {
+            alert("Error loading data. Check console.");
         }
-    }
-
-    // 3. TASK RENDERING
-    function renderTasks(allData, userEmail) {
-        const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = "";
-        
-        for(let i = 1; i < allData.length; i++) {
-            const row = allData[i];
-            if(row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === userEmail) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="color: #00467f; font-weight: bold;">${row[2] || 'Task'}</td>
-                    <td>${row[3] || 'Design'}</td>
-                    <td>${row[4] || '0'}</td>
-                    <td><span style="color: green;">${row[5] || 'Active'}</span></td>
-                    <td>${row[6] || 'TBD'}</td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-    }
-
-    // 4. LEADERBOARD RENDERING (Bonus logic)
-    function renderLeaderboard(allData) {
-        // This assumes you might want to add a Leaderboard table later
-        // It sorts the 100 champions by points (Column E / Index 4)
-        console.log("Leaderboard data processed for 100 champions.");
     }
 </script>
-
