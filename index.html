@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Program Portal</title>
     <style>
-        :root { --blue: #00467f; --light-blue: #0066b3; --gray: #f4f4f4; }
+        :root { --blue: #00467f; --light-blue: #0066b3; --gray: #f4f4f4; --red: #dc2626; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #fff; }
         .hidden { display: none !important; }
         
@@ -16,7 +16,10 @@
         .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; }
 
         /* Dashboard Header */
-        .header { background: var(--blue); color: white; padding: 20px; text-align: center; }
+        .header { background: var(--blue); color: white; padding: 20px; text-align: center; position: relative; }
+        .logout-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .logout-btn:hover { background: var(--red); border-color: var(--red); }
+
         .nav-tabs { display: flex; background: #e9ecef; border-bottom: 2px solid #ddd; }
         .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: none; transition: 0.3s; }
         .tab.active { background: white; color: var(--blue); border-bottom: 4px solid var(--blue); }
@@ -42,6 +45,7 @@
 
 <div id="dashboard" class="hidden">
     <div class="header">
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
         <h1>CHAMPIONS PROGRAM 2026</h1>
         <p>Welcome, <span id="user-name-header">...</span></p>
     </div>
@@ -75,7 +79,6 @@
 </div>
 
 <script>
-    // THE VARIABLE NAME IS NOW "MY_SHEET_URL" TO MATCH YOUR ERRORS
     const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
 
     let sheetData = [];
@@ -89,7 +92,6 @@
             const text = await response.text();
             sheetData = text.split(/\r?\n/).map(row => row.split(','));
 
-            // Validation: Search Column B (Index 1) for email
             const user = sheetData.find(r => r[1] && r[1].toLowerCase().trim() === email);
 
             if (user) {
@@ -151,6 +153,11 @@
         document.getElementById('view-leaderboard').classList.toggle('hidden', target !== 'leaderboard');
         document.getElementById('tab-tasks').classList.toggle('active', target === 'tasks');
         document.getElementById('tab-leader').classList.toggle('active', target === 'leaderboard');
+    }
+
+    function logout() {
+        // Refreshes the page to the start state
+        location.reload();
     }
 </script>
 
