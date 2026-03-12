@@ -1,178 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Champions Program</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card: #ffffff;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .hidden { display: none; }
-        
-        /* Styling for visual placeholders */
-        .banner-placeholder {
-            width: 100%;
-            height: 200px;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            background-image: url('YOUR_BANNER_IMAGE_URL'); /* Placeholder for your stock image */
-            background-size: cover;
-        }
-
-        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; }
-        button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; width: 100%; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f1f5f9; }
-        .points-badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="banner-placeholder">
-        <h1 id="page-title">Champions Portal</h1>
-    </div>
-
-    <div id="login-section" class="card">
-        <h2>Welcome, Champion</h2>
-        <p>Enter your registered email to access your dashboard.</p>
-        <input type="email" id="user-email" placeholder="email@university.edu">
-        <button onclick="handleLogin()">Login</button>
-    </div>
-
-    <div id="dashboard-section" class="hidden">
-        <div class="card">
-            <h3>Active Design Challenges</h3>
-            <div id="task-list">
-                <p>Loading tasks...</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>Leaderboard</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Name</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                    </tbody>
-            </table>
-        </div>
-        <button onclick="location.reload()" style="background: #64748b;">Logout</button>
-    </div>
-</div>
-
-<script>
-    // Replace this URL with your Google Sheet CSV export link
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
-
-    async function fetchData() {
-        const response = await fetch(SHEET_URL);
-        const data = await response.text();
-        return parseCSV(data);
-    }
-
-    function parseCSV(csvText) {
-        const lines = csvText.split("\n");
-        const headers = lines[0].split(",");
-        return lines.slice(1).map(line => {
-            const values = line.split(",");
-            return headers.reduce((obj, header, i) => {
-                obj[header.trim()] = values[i]?.trim();
-                return obj;
-            }, {});
-        });
-    }
-
-    async function handleLogin() {
-        const email = document.getElementById('user-email').value.toLowerCase();
-        if(!email) return alert("Please enter an email");
-
-        // Show dashboard
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.remove('hidden');
-        
-        loadContent();
-    }
-
-    async function loadContent() {
-        // In a real scenario, you'd fetch from your Sheet here
-        // For now, these are placeholders for your logic
-        const leaderboardBody = document.getElementById('leaderboard-body');
-        const taskList = document.getElementById('task-list');
-
-        // Example Task UI
-        taskList.innerHTML = `
-            <div style="border-left: 4px solid #2563eb; padding-left: 15px; margin-bottom: 15px;">
-                <h4>UI/UX Challenge: Dark Mode Dashboard</h4>
-                <p>Design a responsive dashboard. Reward: <span class="points-badge">500 pts</span></p>
-                <a href="#">Submit Link</a>
-            </div>
-        `;
-
-        // Example Leaderboard UI
-        leaderboardBody.innerHTML = `
-            <tr><td>1</td><td>Alex Rivera</td><td><span class="points-badge">1250</span></td></tr>
-            <tr><td>2</td><td>Sam Smith</td><td><span class="points-badge">1100</span></td></tr>
-        `;
-    }
-</script>
-
-</body>
-</html>
-How to link your Google Sheet
-To make the "feed data" part work without a complex backend, follow these steps:
-
-Prepare the Sheet: Create a Google Sheet with columns like Name, Email, Points, and CurrentTask.
-
-Publish to Web: * In Google Sheets, go to File > Share > Publish to web.
-
-Change "Entire Document" to the specific tab you want.
-
-Change "Web page" to Comma-separated values (.csv).
-
-Copy that link and paste it into the SHEET_URL variable in the code above.
-
-The Logic: The JavaScript fetchData() function will read that CSV. You can then write a loop to check if the user's input email exists in the sheet and display their specific points.
-
-Setting up on GitHub
-Create a new repository.
-
-Upload this file as index.html.
-
-Go to Settings > Pages and set the source to the main branch.
-
-Your site will be live at https://yourusername.github.io/your-repo-name/.
-
-Would you like me to write the specific JavaScript logic to filter the leaderboard and verify the email against your Google Sheet data?
-
-You said
-I want to make a dashboard like this inside. Change the code accordingly and keep it like. Keep placeholders so that I can add the images and modify the text
-
-Gemini said
-To replicate the look of the dashboard in your image (the FIRST program style), we’ll use a blue-and-gray color palette, a full-width header with a background image, and a tabbed navigation system.
-
-Below is the updated index.html. It includes the JavaScript logic to filter the leaderboard and task list based on the user's email once they log in.
-
-The Updated Dashboard Code
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,52 +7,34 @@ HTML
     <style>
         :root {
             --first-blue: #00467f;
-            --first-light-blue: #0066b3;
             --bg-gray: #f2f2f2;
             --border-gray: #ccc;
         }
-
         body { font-family: Arial, sans-serif; background: white; margin: 0; padding: 0; }
-
-        /* Top Bar */
-        .top-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; }
-        .logo-placeholder { height: 40px; width: 120px; background: #eee; border: 1px dashed #999; }
-
-        /* Banner Section */
+        .top-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #eee; }
+        .logo-placeholder { font-weight: bold; color: var(--first-blue); border: 1px solid #ddd; padding: 5px 15px; }
+        
         .banner {
-            position: relative;
             height: 120px;
-            background: #e1e8ed url('YOUR_BANNER_BG_STOCK_IMAGE_URL') center/cover no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-top: 1px solid var(--border-gray);
-            border-bottom: 1px solid var(--border-gray);
+            background: #0066b3; /* Solid blue until you add a stock image */
+            display: flex; align-items: center; justify-content: center;
         }
-        .banner h1 { color: var(--first-blue); letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+        .banner h1 { color: white; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
 
-        /* Navigation Tabs */
         .nav-tabs { display: flex; background: #e9ecef; border-bottom: 1px solid var(--border-gray); }
-        .tab { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: bold; cursor: pointer; border-right: 1px solid var(--border-gray); color: #333; }
+        .tab { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: bold; border-right: 1px solid var(--border-gray); color: #333; }
         .tab.active { background: var(--first-blue); color: white; }
 
-        /* Action Buttons Area */
-        .actions-bar { padding: 15px 20px; background: white; display: flex; gap: 10px; }
-        .btn-blue { background: var(--first-blue); color: white; border: none; padding: 8px 16px; font-size: 13px; cursor: pointer; }
-        .btn-outline { border: 1px solid var(--first-blue); color: var(--first-blue); background: white; padding: 8px 16px; font-size: 13px; }
-
-        /* Table Area */
         .content-area { padding: 20px; }
-        .list-header { background: #eee; padding: 10px; border: 1px solid var(--border-gray); font-size: 14px; display: flex; justify-content: space-between; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 0px; font-size: 13px; border: 1px solid var(--border-gray); }
-        th { background: #f9f9f9; color: #444; font-weight: bold; text-align: left; padding: 10px; border-bottom: 2px solid var(--border-gray); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid var(--border-gray); }
+        th { background: #f9f9f9; padding: 10px; text-align: left; border-bottom: 2px solid var(--border-gray); }
         td { padding: 10px; border-bottom: 1px solid #eee; }
 
-        /* Login Modal Style */
-        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index: 1000; }
-        .login-card { width: 300px; text-align: center; }
-        input[type="email"] { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; }
+        /* Login UI */
+        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; align-items:center; justify-content:center; z-index: 1000; }
+        .login-card { width: 320px; text-align: center; padding: 40px; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        input[type="email"] { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-blue { background: var(--first-blue); color: white; border: none; padding: 12px 24px; cursor: pointer; width: 100%; font-weight: bold; }
         
         .hidden { display: none !important; }
     </style>
@@ -236,41 +43,30 @@ HTML
 
 <div id="login-overlay">
     <div class="login-card">
-        <div class="logo-placeholder" style="margin: 0 auto 20px;">Logo Image</div>
-        <h2>Champion Login</h2>
-        <input type="email" id="user-email" placeholder="Enter your email">
-        <button class="btn-blue" onclick="login()">Access Dashboard</button>
+        <div class="logo-placeholder">CHAMPIONS PROGRAM</div>
+        <h2>Sign In</h2>
+        <p style="font-size: 13px; color: #666;">Enter your email to view your tasks</p>
+        <input type="email" id="user-email-input" placeholder="yourname@email.com">
+        <button class="btn-blue" onclick="handleLogin()">ACCESS DASHBOARD</button>
     </div>
 </div>
 
 <div id="main-dashboard" class="hidden">
     <header class="top-header">
-        <div class="logo-placeholder">Main Logo</div>
-        <div id="user-display" style="font-size: 14px;">Hello, <span id="user-name-span">Champion</span></div>
+        <div class="logo-placeholder">FIRST CHAMPIONS</div>
+        <div style="font-size: 14px;">Hello, <span id="display-name" style="font-weight: bold;">Champion</span></div>
     </header>
 
     <div class="banner">
-        <h1>Dashboard</h1>
+        <h1>DASHBOARD</h1>
     </div>
 
     <nav class="nav-tabs">
         <div class="tab active">MY TASKS</div>
         <div class="tab">LEADERBOARD</div>
-        <div class="tab">PROGRAM INFO</div>
-        <div class="tab">RESOURCES</div>
     </nav>
 
-    <div class="actions-bar">
-        <button class="btn-blue">+ VIEW NEW TASKS</button>
-        <button class="btn-blue">TRAINING PORTAL</button>
-        <button class="btn-outline">NEED HELP? ▾</button>
-    </div>
-
     <div class="content-area">
-        <div class="list-header">
-            <span>List of Tasks</span>
-            <span>Sort by: Date Added ▾</span>
-        </div>
         <table>
             <thead>
                 <tr>
@@ -278,49 +74,69 @@ HTML
                     <th>Category</th>
                     <th>Points</th>
                     <th>Status</th>
-                    <th>Deadline</th>
                 </tr>
             </thead>
-            <tbody id="task-table-body">
+            <tbody id="task-list-body">
                 </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // ONLY DEFINE THIS ONCE
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv"; 
+    // DEFINE ONCE
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
 
-    async function login() {
-        // This 'user-email' must match the ID of your <input> tag
-        const emailInput = document.getElementById('user-email').value.trim().toLowerCase();
+    async function handleLogin() {
+        const email = document.getElementById('user-email-input').value.trim().toLowerCase();
         
-        if (!emailInput) {
-            alert("Please enter your email");
+        if (!email) {
+            alert("Please enter an email");
             return;
         }
 
         try {
             const response = await fetch(SHEET_URL);
             const text = await response.text();
-            const rows = text.split(/\r?\n/).map(line => line.split(','));
+            // Split by lines and commas
+            const rows = text.split(/\r?\n/).map(row => row.split(','));
             
-            const userMatch = rows.find(row => 
-                row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === emailInput
-            );
+            // Search Column B (index 1) for the email
+            const user = rows.find(r => r[1] && r[1].replace(/"/g, '').trim().toLowerCase() === email);
 
-            if (userMatch) {
+            if (user) {
+                // Success
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('main-dashboard').classList.remove('hidden');
-                document.getElementById('user-name-span').innerText = userMatch[0].replace(/"/g, '');
+                document.getElementById('display-name').innerText = user[0].replace(/"/g, '');
                 
-                // Add logic here to fill your tables
-                console.log("Login successful for " + emailInput);
+                loadTasks(rows, email);
             } else {
-                alert("Email not found in our records.");
+                alert("Email not found. Please check your spelling.");
             }
         } catch (err) {
-            alert("Error loading data. Check console.");
+            alert("Error: Could not connect to data.");
+            console.error(err);
         }
     }
+
+    function loadTasks(data, email) {
+        const tbody = document.getElementById('task-list-body');
+        tbody.innerHTML = "";
+        
+        data.forEach((row, index) => {
+            if (index === 0) return; // skip header
+            if (row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === email) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${row[2] || 'Task'}</b></td>
+                    <td>${row[3] || 'General'}</td>
+                    <td>${row[4] || '0'}</td>
+                    <td style="color: green;">${row[5] || 'Active'}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+    }
 </script>
+</body>
+</html>
