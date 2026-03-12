@@ -288,52 +288,76 @@ HTML
 </div>
 
 <script>
-    // 1. YOUR GOOGLE SHEET CSV LINK HERE
-    const SHEET_URL = "PASTE_YOUR_GOOGLE_SHEET_PUBLISHED_CSV_URL_HERE";
+   <script>
+    // 1. MUST BE THE "PUBLISH TO WEB" -> CSV LINK
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pubhtml"; 
 
     async function login() {
+        console.log("Login button clicked...");
         const emailInput = document.getElementById('user-email').value.trim().toLowerCase();
-        if (!emailInput) return alert("Enter email");
-
-        // Show the UI immediately
-        document.getElementById('login-overlay').classList.add('hidden');
-        document.getElementById('main-dashboard').classList.remove('hidden');
         
-        loadSheetData(emailInput);
+        if (!emailInput) {
+            alert("Please enter your email");
+            return;
+        }
+
+        try {
+            console.log("Fetching data from:", SHEET_URL);
+            const response = await fetch(SHEET_URL);
+            
+            if (!response.ok) throw new Error("Sheet link is invalid or not published.");
+
+            const text = await response.text();
+            console.log("Data received from Google Sheets.");
+
+            // Parse CSV Rows
+            const rows = text.split('\n').map(line => line.split(','));
+            
+            // Check if user exists
+            // row[1] is the Email column in your sheet
+            const userMatch = rows.find(row => row[1] && row[1].toLowerCase().trim() === emailInput);
+
+            if (userMatch) {
+                console.log("User found:", userMatch[0]);
+                // Transition UI
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
+                
+                // Set Header Name
+                document.getElementById('user-name-span').innerText = userMatch[0];
+                
+                // Show tasks for this user
+                renderTasks(rows, emailInput);
+            } else {
+                alert("Email not found in the Champions database. Check your spelling!");
+            }
+
+        } catch (error) {
+            console.error("Error Detail:", error);
+            alert("Connection Error: " + error.message);
+        }
     }
 
-    async function loadSheetData(userEmail) {
-        try {
-            const response = await fetch(SHEET_URL);
-            const data = await response.text();
-            const rows = data.split('\n').map(r => r.split(','));
-            
-            // Assuming Sheet Columns: Name, Email, TaskName, Category, Points, Status, Deadline
-            const tasks = rows.slice(1); // skip header
-            const taskBody = document.getElementById('task-table-body');
-            taskBody.innerHTML = "";
-
-            tasks.forEach(row => {
-                if(row[1] && row[1].trim().toLowerCase() === userEmail) {
-                    document.getElementById('user-name-span').innerText = row[0]; // Set name
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="color: #0066b3; font-weight: bold;">${row[2]}</td>
-                        <td>${row[3]}</td>
-                        <td>${row[4]}</td>
-                        <td><span style="color: green;">${row[5]}</span></td>
-                        <td>${row[6]}</td>
-                    `;
-                    taskBody.appendChild(tr);
-                }
-            });
-        } catch (e) {
-            console.error("Error loading sheet data", e);
+    function renderTasks(allData, userEmail) {
+        const tbody = document.getElementById('task-table-body');
+        tbody.innerHTML = "";
+        
+        // Skip header row
+        for(let i = 1; i < allData.length; i++) {
+            const row = allData[i];
+            if(row[1] && row[1].toLowerCase().trim() === userEmail) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: #0066b3; font-weight: bold;">${row[2] || 'Task'}</td>
+                    <td>${row[3] || 'General'}</td>
+                    <td>${row[4] || '0'}</td>
+                    <td><span style="color: green;">${row[5] || 'Active'}</span></td>
+                    <td>${row[6] || 'TBD'}</td>
+                `;
+                tbody.appendChild(tr);
+            }
         }
     }
 </script>
-</body>
-</html>
 
 
