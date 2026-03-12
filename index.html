@@ -3,156 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Champions Program Portal</title>
+    <title>Champions Portal</title>
     <style>
-        :root { --blue: #00467f; --light-blue: #0066b3; --gray: #f4f4f4; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #fff; }
+        :root { --blue: #00467f; }
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; color: #333; }
         .hidden { display: none !important; }
         
-        /* Login UI */
-        .overlay { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-card { width: 320px; padding: 40px; border: 1px solid #ddd; text-align: center; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        /* Login Screen */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        
+        /* Dashboard */
+        header { background: var(--blue); color: white; padding: 20px; text-align: center; position: relative; }
+        .nav { display: flex; background: #ddd; }
+        .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; }
+        .tab.active { background: white; border-bottom: 4px solid var(--blue); }
 
-        /* Dashboard Header */
-        .header { background: var(--blue); color: white; padding: 20px; text-align: center; }
-        .nav-tabs { display: flex; background: #e9ecef; border-bottom: 2px solid #ddd; }
-        .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: none; transition: 0.3s; }
-        .tab.active { background: white; color: var(--blue); border-bottom: 4px solid var(--blue); }
+        .container { padding: 20px; max-width: 900px; margin: auto; background: white; min-height: 80vh; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #eee; }
 
-        /* Tables */
-        .container { padding: 20px; max-width: 1000px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #fafafa; color: var(--blue); text-transform: uppercase; font-size: 12px; }
-        .rank-gold { color: #d4af37; font-weight: bold; }
-        .points-pill { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+        input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; }
+        .logout { position: absolute; right: 10px; top: 20px; background: none; border: 1px solid white; color: white; padding: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="login-screen" class="overlay">
-    <div class="login-card">
-        <h2 style="color: var(--blue);">Champion Login</h2>
-        <input type="email" id="email-field" placeholder="Enter your email">
-        <button class="btn-main" onclick="startLogin()">Access Portal</button>
-    </div>
-</div>
-
-<div id="dashboard" class="hidden">
-    <div class="header">
-        <h1>CHAMPIONS PROGRAM 2026</h1>
-        <p>Welcome, <span id="user-name-header">...</span></p>
-    </div>
-
-    <div class="nav-tabs">
-        <button id="tab-tasks" class="tab active" onclick="switchTab('tasks')">MY TASKS</button>
-        <button id="tab-leader" class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
-    </div>
-
-    <div class="container">
-        <div id="view-tasks">
-            <h3>Assigned Design Challenges</h3>
-            <table>
-                <thead>
-                    <tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr>
-                </thead>
-                <tbody id="task-list"></tbody>
-            </table>
-        </div>
-
-        <div id="view-leaderboard" class="hidden">
-            <h3>Global Champion Rankings</h3>
-            <table>
-                <thead>
-                    <tr><th>Rank</th><th>Champion</th><th>Total Score</th></tr>
-                </thead>
-                <tbody id="leader-list"></tbody>
-            </table>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="color:var(--blue)">Champion Login</h2>
+            <input type="email" id="user-email" placeholder="email@example.com">
+            <button class="btn" onclick="processLogin()">Access Dashboard</button>
         </div>
     </div>
-</div>
+
+    <div id="dashboard-screen" class="hidden">
+        <header>
+            <button class="logout" onclick="location.reload()">LOGOUT</button>
+            <h1>CHAMPIONS 2026</h1>
+            <p>Welcome, <span id="display-name">...</span></p>
+        </header>
+
+        <div class="nav">
+            <button id="btn-t" class="tab active" onclick="tab('tasks')">MY TASKS</button>
+            <button id="btn-l" class="tab" onclick="tab('leaderboard')">LEADERBOARD</button>
+        </div>
+
+        <div class="container">
+            <div id="view-t">
+                <h3>Your Active Challenges</h3>
+                <table>
+                    <thead><tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
+                    <tbody id="table-t"></tbody>
+                </table>
+            </div>
+
+            <div id="view-l" class="hidden">
+                <h3>Global Leaderboard</h3>
+                <table>
+                    <thead><tr><th>Rank</th><th>Name</th><th>Total Points</th></tr></thead>
+                    <tbody id="table-l"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 <script>
-    // THE VARIABLE NAME IS NOW "MY_SHEET_URL" TO MATCH YOUR ERRORS
-    const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    // YOUR PUBLISHED CSV LINK
+    const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    
+    let csvData = [];
 
-    let sheetData = [];
-
-    async function startLogin() {
-        const email = document.getElementById('email-field').value.trim().toLowerCase();
+    async function processLogin() {
+        const email = document.getElementById('user-email').value.trim().toLowerCase();
         if(!email) return alert("Please enter email");
 
         try {
-            const response = await fetch(MY_SHEET_URL);
-            const text = await response.text();
-            sheetData = text.split(/\r?\n/).map(row => row.split(','));
+            const res = await fetch(SHEET_LINK);
+            const text = await res.text();
+            
+            // Convert text to rows
+            csvData = text.split(/\r?\n/).map(line => line.split(','));
 
-            // Validation: Search Column B (Index 1) for email
-            const user = sheetData.find(r => r[1] && r[1].toLowerCase().trim() === email);
+            // Find user in Column B (Index 1)
+            const userMatch = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
 
-            if (user) {
+            if (userMatch) {
+                // Change UI
                 document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('user-name-header').innerText = user[0];
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                document.getElementById('display-name').innerText = userMatch[0];
 
-                updateTasks(email);
-                updateLeaderboard();
+                loadTasks(email);
+                loadLeaderboard();
             } else {
-                alert("Email not found in the Champions database!");
+                alert("Email not found. Make sure it matches Column B in your Google Sheet.");
             }
-        } catch (err) {
-            console.error(err);
-            alert("Error connecting to Google Sheets.");
+        } catch (error) {
+            console.error(error);
+            alert("Error: Check your Sheet link or Internet connection.");
         }
     }
 
-    function updateTasks(userEmail) {
-        const tbody = document.getElementById('task-list');
+    function loadTasks(userEmail) {
+        const tbody = document.getElementById('table-t');
         tbody.innerHTML = "";
-        sheetData.slice(1).forEach(r => {
-            if(r[1] && r[1].toLowerCase().trim() === userEmail) {
+        csvData.slice(1).forEach(row => {
+            if(row[1] && row[1].toLowerCase().trim() === userEmail) {
                 tbody.innerHTML += `<tr>
-                    <td><b>${r[2]}</b></td>
-                    <td>${r[3]}</td>
-                    <td><span class="points-pill">${r[4]}</span></td>
-                    <td style="color:green">${r[5]}</td>
+                    <td><b>${row[2] || 'Task'}</b></td>
+                    <td>${row[3] || 'General'}</td>
+                    <td>${row[4] || '0'}</td>
+                    <td>${row[5] || 'Active'}</td>
                 </tr>`;
             }
         });
     }
 
-    function updateLeaderboard() {
-        const tbody = document.getElementById('leader-list');
+    function loadLeaderboard() {
+        const tbody = document.getElementById('table-l');
         tbody.innerHTML = "";
 
-        let scores = {};
-        sheetData.slice(1).forEach(r => {
-            let name = r[0];
-            let pts = parseInt(r[4]) || 0;
-            if(name) scores[name] = (scores[name] || 0) + pts;
+        let totals = {};
+        csvData.slice(1).forEach(row => {
+            let name = row[0];
+            let pts = parseInt(row[4]) || 0;
+            if(name) totals[name] = (totals[name] || 0) + pts;
         });
 
-        const sorted = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
+        const sorted = Object.keys(totals).sort((a,b) => totals[b] - totals[a]);
 
         sorted.forEach((name, i) => {
-            let rankColor = (i < 3) ? 'class="rank-gold"' : '';
-            tbody.innerHTML += `<tr>
-                <td ${rankColor}>#${i+1}</td>
-                <td>${name}</td>
-                <td><b>${scores[name]}</b></td>
-            </tr>`;
+            tbody.innerHTML += `<tr><td>#${i+1}</td><td>${name}</td><td><b>${totals[name]}</b></td></tr>`;
         });
     }
 
-    function switchTab(target) {
-        document.getElementById('view-tasks').classList.toggle('hidden', target !== 'tasks');
-        document.getElementById('view-leaderboard').classList.toggle('hidden', target !== 'leaderboard');
-        document.getElementById('tab-tasks').classList.toggle('active', target === 'tasks');
-        document.getElementById('tab-leader').classList.toggle('active', target === 'leaderboard');
+    function tab(name) {
+        document.getElementById('view-t').classList.toggle('hidden', name !== 'tasks');
+        document.getElementById('view-l').classList.toggle('hidden', name !== 'leaderboard');
+        document.getElementById('btn-t').classList.toggle('active', name === 'tasks');
+        document.getElementById('btn-l').classList.toggle('active', name === 'leaderboard');
     }
 </script>
-
 </body>
 </html>
