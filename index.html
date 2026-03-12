@@ -289,11 +289,11 @@ HTML
 
 <script>
 
-    // 1. MUST BE THE "PUBLISH TO WEB" -> CSV LINK
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pubhtml"; 
+  
+    // THE CORRECTED LINK
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv"; 
 
     async function login() {
-        console.log("Login button clicked...");
         const emailInput = document.getElementById('user-email').value.trim().toLowerCase();
         
         if (!emailInput) {
@@ -302,39 +302,35 @@ HTML
         }
 
         try {
-            console.log("Fetching data from:", SHEET_URL);
             const response = await fetch(SHEET_URL);
-            
-            if (!response.ok) throw new Error("Sheet link is invalid or not published.");
+            if (!response.ok) throw new Error("Could not fetch data.");
 
             const text = await response.text();
-            console.log("Data received from Google Sheets.");
-
-            // Parse CSV Rows
-            const rows = text.split('\n').map(line => line.split(','));
             
-            // Check if user exists
-            // row[1] is the Email column in your sheet
-            const userMatch = rows.find(row => row[1] && row[1].toLowerCase().trim() === emailInput);
+            // Clean up the data from Google
+            const rows = text.split(/\r?\n/).map(line => line.split(','));
+            
+            // Look for the email in Column B (index 1)
+            const userMatch = rows.find(row => {
+                return row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === emailInput;
+            });
 
             if (userMatch) {
-                console.log("User found:", userMatch[0]);
-                // Transition UI
+                // SUCCESS! Hide login, show dashboard
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('main-dashboard').classList.remove('hidden');
                 
-                // Set Header Name
-                document.getElementById('user-name-span').innerText = userMatch[0];
+                // Set the name in the header
+                document.getElementById('user-name-span').innerText = userMatch[0].replace(/"/g, '');
                 
-                // Show tasks for this user
                 renderTasks(rows, emailInput);
             } else {
-                alert("Email not found in the Champions database. Check your spelling!");
+                alert("Email not found! Make sure it matches exactly what is in Column B of your Google Sheet.");
             }
 
         } catch (error) {
-            console.error("Error Detail:", error);
-            alert("Connection Error: " + error.message);
+            console.error(error);
+            alert("Error connecting to Google Sheets. Make sure 'Publish to Web' is active.");
         }
     }
 
@@ -342,25 +338,21 @@ HTML
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = "";
         
-        // Skip header row
+        // Loop through all rows (skipping the header)
         for(let i = 1; i < allData.length; i++) {
             const row = allData[i];
-            if(row[1] && row[1].toLowerCase().trim() === userEmail) {
+            // If this task belongs to the user
+            if(row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === userEmail) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="color: #0066b3; font-weight: bold;">${row[2] || 'Task'}</td>
-                    <td>${row[3] || 'General'}</td>
+                    <td style="color: #0066b3; font-weight: bold;">${row[2] || 'New Task'}</td>
+                    <td>${row[3] || 'Design'}</td>
                     <td>${row[4] || '0'}</td>
-                    <td><span style="color: green;">${row[5] || 'Active'}</span></td>
-                    <td>${row[6] || 'TBD'}</td>
+                    <td><span style="color: green;">${row[5] || 'Pending'}</span></td>
+                    <td>${row[6] || 'No Deadline'}</td>
                 `;
                 tbody.appendChild(tr);
             }
         }
     }
 </script>
-
-
-
-
-
