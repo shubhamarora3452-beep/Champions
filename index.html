@@ -9,13 +9,11 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #fff; }
         .hidden { display: none !important; }
         
-        /* Login UI */
         .overlay { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .login-card { width: 320px; padding: 40px; border: 1px solid #ddd; text-align: center; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; }
 
-        /* Dashboard Header */
         .header { background: var(--blue); color: white; padding: 20px; text-align: center; position: relative; }
         .logout-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.3s; }
         .logout-btn:hover { background: var(--red); border-color: var(--red); }
@@ -24,7 +22,6 @@
         .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: none; transition: 0.3s; }
         .tab.active { background: white; color: var(--blue); border-bottom: 4px solid var(--blue); }
 
-        /* Tables */
         .container { padding: 20px; max-width: 1000px; margin: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
@@ -32,22 +29,55 @@
         .rank-gold { color: #d4af37; font-weight: bold; }
         .points-pill { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
     </style>
+</head>
+<body>
 
-    <script>
-        // Move script to HEAD and use global scope for functions
-        const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
-        let sheetData = [];
+<div id="login-screen" class="overlay">
+    <div class="login-card">
+        <h2 style="color: var(--blue);">Champion Login</h2>
+        <input type="email" id="email-field" placeholder="Enter your email">
+        <button class="btn-main" id="login-button">Access Portal</button>
+    </div>
+</div>
 
-        window.startLogin = async function() {
-            const email = document.getElementById('email-field').value.trim().toLowerCase();
-            if(!email) return alert("Please enter email");
+<div id="dashboard" class="hidden">
+    <div class="header">
+        <button class="logout-btn" id="logout-button">LOGOUT</button>
+        <h1>CHAMPIONS PROGRAM 2026</h1>
+        <p>Welcome, <span id="user-name-header">...</span></p>
+    </div>
+    <div class="nav-tabs">
+        <button id="tab-tasks" class="tab active">MY TASKS</button>
+        <button id="tab-leader" class="tab">LEADERBOARD</button>
+    </div>
+    <div class="container">
+        <div id="view-tasks">
+            <h3>Your Assigned Challenges</h3>
+            <table>
+                <thead><tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
+                <tbody id="task-list"></tbody>
+            </table>
+        </div>
+        <div id="view-leaderboard" class="hidden">
+            <h3>Global Champion Rankings</h3>
+            <table>
+                <thead><tr><th>Rank</th><th>Champion</th><th>Total Score</th></tr></thead>
+                <tbody id="leader-list"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-            try {
-                const response = await fetch(MY_SHEET_URL);
-                const text = await response.text();
-                sheetData = text.split(/\r?\n/).map(row => row.split(','));
+<script>
+    // 1. DATA CONFIGURATION
+    const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    let sheetData = [];
 
-                const user = sheetData.find(r => r[1] && r[1].toLowerCase().trim() === email);
+    // 2. CORE FUNCTIONS
+    async function startLogin() {
+        const email = document.getElementById('email-field').value.trim().toLowerCase();
+        if(!email) return alert("Please enter your email");
 
-                if (user) {
-                    document.getElementById('login-screen').classList.add('hidden');
+        try {
+            const response = await fetch(MY_SHEET_URL);
+            const text = await response
