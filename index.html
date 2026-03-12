@@ -5,138 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Dashboard</title>
     <style>
-        :root {
-            --first-blue: #00467f;
-            --bg-gray: #f2f2f2;
-            --border-gray: #ccc;
-        }
-        body { font-family: Arial, sans-serif; background: white; margin: 0; padding: 0; }
-        .top-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #eee; }
-        .logo-placeholder { font-weight: bold; color: var(--first-blue); border: 1px solid #ddd; padding: 5px 15px; }
-        
-        .banner {
-            height: 120px;
-            background: #0066b3; /* Solid blue until you add a stock image */
-            display: flex; align-items: center; justify-content: center;
-        }
-        .banner h1 { color: white; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
-
-        .nav-tabs { display: flex; background: #e9ecef; border-bottom: 1px solid var(--border-gray); }
-        .tab { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: bold; border-right: 1px solid var(--border-gray); color: #333; }
-        .tab.active { background: var(--first-blue); color: white; }
-
-        .content-area { padding: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid var(--border-gray); }
-        th { background: #f9f9f9; padding: 10px; text-align: left; border-bottom: 2px solid var(--border-gray); }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
-
-        /* Login UI */
-        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; align-items:center; justify-content:center; z-index: 1000; }
-        .login-card { width: 320px; text-align: center; padding: 40px; border: 1px solid #eee; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        input[type="email"] { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn-blue { background: var(--first-blue); color: white; border: none; padding: 12px 24px; cursor: pointer; width: 100%; font-weight: bold; }
-        
+        :root { --blue: #00467f; --gray: #f2f2f2; }
+        body { font-family: sans-serif; margin: 0; background: #fff; }
         .hidden { display: none !important; }
+        .overlay { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .card { width: 300px; padding: 30px; border: 1px solid #ddd; text-align: center; border-radius: 8px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: var(--blue); color: white; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; }
+        .banner { height: 100px; background: #0066b3; color: white; display: flex; align-items: center; justify-content: center; }
+        table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f8f8; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="login-card">
-        <div class="logo-placeholder">CHAMPIONS PROGRAM</div>
-        <h2>Sign In</h2>
-        <p style="font-size: 13px; color: #666;">Enter your email to view your tasks</p>
-        <input type="email" id="user-email-input" placeholder="yourname@email.com">
-        <button class="btn-blue" onclick="handleLogin()">ACCESS DASHBOARD</button>
+<div id="login-overlay" class="overlay">
+    <div class="card">
+        <h2>Champion Login</h2>
+        <input type="email" id="user-email" placeholder="Enter your email">
+        <button onclick="startLogin()">Login</button>
     </div>
 </div>
 
-<div id="main-dashboard" class="hidden">
-    <header class="top-header">
-        <div class="logo-placeholder">FIRST CHAMPIONS</div>
-        <div style="font-size: 14px;">Hello, <span id="display-name" style="font-weight: bold;">Champion</span></div>
-    </header>
-
-    <div class="banner">
-        <h1>DASHBOARD</h1>
-    </div>
-
-    <nav class="nav-tabs">
-        <div class="tab active">MY TASKS</div>
-        <div class="tab">LEADERBOARD</div>
-    </nav>
-
-    <div class="content-area">
-        <table>
-            <thead>
-                <tr>
-                    <th>Task Name</th>
-                    <th>Category</th>
-                    <th>Points</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="task-list-body">
-                </tbody>
-        </table>
-    </div>
+<div id="dashboard" class="hidden">
+    <div class="banner"><h1>CHAMPIONS PORTAL</h1></div>
+    <div style="padding: 20px; text-align: right;">Hello, <b id="user-name">User</b></div>
+    <table>
+        <thead>
+            <tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr>
+        </thead>
+        <tbody id="task-table"></tbody>
+    </table>
 </div>
 
 <script>
-    // DEFINE ONCE
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    // PASTE YOUR CSV LINK HERE
+    const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
 
-    async function handleLogin() {
-        const email = document.getElementById('user-email-input').value.trim().toLowerCase();
-        
-        if (!email) {
-            alert("Please enter an email");
-            return;
-        }
+    async function startLogin() {
+        const inputEmail = document.getElementById('user-email').value.trim().toLowerCase();
+        if(!inputEmail) return alert("Enter email");
 
         try {
-            const response = await fetch(SHEET_URL);
-            const text = await response.text();
-            // Split by lines and commas
-            const rows = text.split(/\r?\n/).map(row => row.split(','));
+            const res = await fetch(MY_SHEET_URL);
+            const text = await res.text();
             
-            // Search Column B (index 1) for the email
-            const user = rows.find(r => r[1] && r[1].replace(/"/g, '').trim().toLowerCase() === email);
+            // Convert CSV text to an Array
+            const rows = text.split(/\r?\n/).map(row => row.split(','));
 
-            if (user) {
-                // Success
+            // VALIDATION LOGIC:
+            // It looks at Column B (index 1) of every row to see if it matches your input.
+            const userRow = rows.find(r => r[1] && r[1].toLowerCase().trim() === inputEmail);
+
+            if (userRow) {
+                // Switch Screens
                 document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
-                document.getElementById('display-name').innerText = user[0].replace(/"/g, '');
-                
-                loadTasks(rows, email);
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('user-name').innerText = userRow[0]; // Get Name from Col A
+
+                // Show tasks
+                const tbody = document.getElementById('task-table');
+                rows.slice(1).forEach(r => {
+                    if(r[1] && r[1].toLowerCase().trim() === inputEmail) {
+                        tbody.innerHTML += `<tr><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
+                    }
+                });
             } else {
-                alert("Email not found. Please check your spelling.");
+                alert("Email not found in our database!");
             }
-        } catch (err) {
-            alert("Error: Could not connect to data.");
-            console.error(err);
+        } catch (e) {
+            alert("Error connecting to data.");
+            console.error(e);
         }
     }
-
-    function loadTasks(data, email) {
-        const tbody = document.getElementById('task-list-body');
-        tbody.innerHTML = "";
-        
-        data.forEach((row, index) => {
-            if (index === 0) return; // skip header
-            if (row[1] && row[1].replace(/"/g, '').trim().toLowerCase() === email) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${row[2] || 'Task'}</b></td>
-                    <td>${row[3] || 'General'}</td>
-                    <td>${row[4] || '0'}</td>
-                    <td style="color: green;">${row[5] || 'Active'}</td>
-                `;
-                tbody.appendChild(tr);
-            }
-        });
-    }
 </script>
+
 </body>
 </html>
