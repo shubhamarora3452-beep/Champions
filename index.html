@@ -32,42 +32,22 @@
         .rank-gold { color: #d4af37; font-weight: bold; }
         .points-pill { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
     </style>
-</head>
-<body>
 
-<div id="login-screen" class="overlay">
-    <div class="login-card">
-        <h2 style="color: var(--blue);">Champion Login</h2>
-        <input type="email" id="email-field" placeholder="Enter your email">
-        <button class="btn-main" onclick="startLogin()">Access Portal</button>
-    </div>
-</div>
+    <script>
+        // Move script to HEAD and use global scope for functions
+        const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+        let sheetData = [];
 
-<div id="dashboard" class="hidden">
-    <div class="header">
-        <button class="logout-btn" onclick="logout()">LOGOUT</button>
-        <h1>CHAMPIONS PROGRAM 2026</h1>
-        <p>Welcome, <span id="user-name-header">...</span></p>
-    </div>
+        window.startLogin = async function() {
+            const email = document.getElementById('email-field').value.trim().toLowerCase();
+            if(!email) return alert("Please enter email");
 
-    <div class="nav-tabs">
-        <button id="tab-tasks" class="tab active" onclick="switchTab('tasks')">MY TASKS</button>
-        <button id="tab-leader" class="tab" onclick="switchTab('leaderboard')">LEADERBOARD</button>
-    </div>
+            try {
+                const response = await fetch(MY_SHEET_URL);
+                const text = await response.text();
+                sheetData = text.split(/\r?\n/).map(row => row.split(','));
 
-    <div class="container">
-        <div id="view-tasks">
-            <h3>Assigned Design Challenges</h3>
-            <table>
-                <thead>
-                    <tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr>
-                </thead>
-                <tbody id="task-list"></tbody>
-            </table>
-        </div>
+                const user = sheetData.find(r => r[1] && r[1].toLowerCase().trim() === email);
 
-        <div id="view-leaderboard" class="hidden">
-            <h3>Global Champion Rankings</h3>
-            <table>
-                <thead>
-                    <tr><th>Rank</th><th>Champion</th><th>Total Score</th>
+                if (user) {
+                    document.getElementById('login-screen').classList.add('hidden');
