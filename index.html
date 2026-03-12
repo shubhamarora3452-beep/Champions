@@ -5,78 +5,164 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Dashboard</title>
     <style>
-        :root { --blue: #00467f; --gray: #f2f2f2; }
-        body { font-family: sans-serif; margin: 0; background: #fff; }
+        :root { --blue: #00467f; --light-blue: #0066b3; --gray: #f2f2f2; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #fff; color: #333; }
         .hidden { display: none !important; }
+        
+        /* Login Screen */
         .overlay { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .card { width: 300px; padding: 30px; border: 1px solid #ddd; text-align: center; border-radius: 8px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: var(--blue); color: white; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; }
-        .banner { height: 100px; background: #0066b3; color: white; display: flex; align-items: center; justify-content: center; }
-        table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+        .card { width: 320px; padding: 40px; border: 1px solid #eee; text-align: center; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        
+        /* Header & Tabs */
+        .banner { height: 120px; background: var(--light-blue); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .tabs { display: flex; background: #eee; border-bottom: 1px solid #ddd; }
+        .tab-btn { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; background: none; border-right: 1px solid #ddd; }
+        .tab-btn.active { background: var(--blue); color: white; }
+        
+        /* Content */
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button.primary { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        table { width: 95%; margin: 20px auto; border-collapse: collapse; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #f8f8f8; }
+        th { background: #f8f8f8; color: var(--blue); }
+        .rank-badge { background: #ffd700; padding: 2px 8px; border-radius: 10px; font-weight: bold; color: #000; }
     </style>
 </head>
 <body>
 
 <div id="login-overlay" class="overlay">
     <div class="card">
-        <h2>Champion Login</h2>
+        <h2 style="color: var(--blue);">Champion Login</h2>
         <input type="email" id="user-email" placeholder="Enter your email">
-        <button onclick="startLogin()">Login</button>
+        <button class="primary" onclick="startLogin()">Login</button>
     </div>
 </div>
 
 <div id="dashboard" class="hidden">
-    <div class="banner"><h1>CHAMPIONS PORTAL</h1></div>
-    <div style="padding: 20px; text-align: right;">Hello, <b id="user-name">User</b></div>
-    <table>
-        <thead>
-            <tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr>
-        </thead>
-        <tbody id="task-table"></tbody>
-    </table>
+    <div class="banner">
+        <h1>CHAMPIONS PROGRAM</h1>
+        <p>Welcome back, <span id="user-name">Champion</span>!</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('tasks')">MY TASKS</button>
+        <button class="tab-btn" onclick="showTab('leaderboard')">LEADERBOARD</button>
+    </div>
+
+    <div id="tasks-view">
+        <h3 style="text-align:center; margin-top:20px;">Your Active Challenges</h3>
+        <table>
+            <thead>
+                <tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr>
+            </thead>
+            <tbody id="task-table"></tbody>
+        </table>
+    </div>
+
+    <div id="leaderboard-view" class="hidden">
+        <h3 style="text-align:center; margin-top:20px;">Top Champions Ranking</h3>
+        <table>
+            <thead>
+                <tr><th>Rank</th><th>Champion Name</th><th>Total Points</th></tr>
+            </thead>
+            <tbody id="leaderboard-table"></tbody>
+        </table>
+    </div>
+    
+    <div style="text-align:center; padding: 20px;">
+        <button onclick="location.reload()" style="width:auto; padding: 5px 20px; background:#666; color:white; border:none; border-radius:4px; cursor:pointer;">Logout</button>
+    </div>
 </div>
 
 <script>
-    // PASTE YOUR CSV LINK HERE
-    const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+    // const MY_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
+
+    let globalData = [];
 
     async function startLogin() {
         const inputEmail = document.getElementById('user-email').value.trim().toLowerCase();
-        if(!inputEmail) return alert("Enter email");
+        if(!inputEmail) return alert("Please enter your email");
 
         try {
             const res = await fetch(MY_SHEET_URL);
             const text = await res.text();
-            
-            // Convert CSV text to an Array
-            const rows = text.split(/\r?\n/).map(row => row.split(','));
+            globalData = text.split(/\r?\n/).map(row => row.split(','));
 
-            // VALIDATION LOGIC:
-            // It looks at Column B (index 1) of every row to see if it matches your input.
-            const userRow = rows.find(r => r[1] && r[1].toLowerCase().trim() === inputEmail);
+            // Validation: Search Column B (Index 1)
+            const userRow = globalData.find(r => r[1] && r[1].toLowerCase().trim() === inputEmail);
 
             if (userRow) {
-                // Switch Screens
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('user-name').innerText = userRow[0]; // Get Name from Col A
+                document.getElementById('user-name').innerText = userRow[0];
 
-                // Show tasks
-                const tbody = document.getElementById('task-table');
-                rows.slice(1).forEach(r => {
-                    if(r[1] && r[1].toLowerCase().trim() === inputEmail) {
-                        tbody.innerHTML += `<tr><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
-                    }
-                });
+                loadTasks(inputEmail);
+                loadLeaderboard();
             } else {
-                alert("Email not found in our database!");
+                alert("Email not found! Make sure it matches Column B in your Google Sheet.");
             }
         } catch (e) {
             alert("Error connecting to data.");
             console.error(e);
+        }
+    }
+
+    // Logic for Task View
+    function loadTasks(email) {
+        const tbody = document.getElementById('task-table');
+        tbody.innerHTML = "";
+        globalData.slice(1).forEach(r => {
+            if(r[1] && r[1].toLowerCase().trim() === email) {
+                tbody.innerHTML += `<tr><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
+            }
+        });
+    }
+
+    // Logic for Leaderboard (Calculates points for all 100 students)
+    function loadLeaderboard() {
+        const tbody = document.getElementById('leaderboard-table');
+        tbody.innerHTML = "";
+
+        // 1. Group points by Name (Column A / Index 0)
+        let rankings = {};
+        globalData.slice(1).forEach(r => {
+            let name = r[0];
+            let points = parseInt(r[4]) || 0; // Column E / Index 4
+            if (name) {
+                rankings[name] = (rankings[name] || 0) + points;
+            }
+        });
+
+        // 2. Sort names by points (Highest first)
+        let sortedNames = Object.keys(rankings).sort((a, b) => rankings[b] - rankings[a]);
+
+        // 3. Render the table
+        sortedNames.forEach((name, index) => {
+            let rankClass = (index < 3) ? 'class="rank-badge"' : '';
+            tbody.innerHTML += `<tr>
+                <td><span ${rankClass}>${index + 1}</span></td>
+                <td>${name}</td>
+                <td><b>${rankings[name]}</b></td>
+            </tr>`;
+        });
+    }
+
+    // Tab Switching Logic
+    function showTab(tabName) {
+        const tasksView = document.getElementById('tasks-view');
+        const leadView = document.getElementById('leaderboard-view');
+        const btns = document.querySelectorAll('.tab-btn');
+
+        btns.forEach(b => b.classList.remove('active'));
+
+        if(tabName === 'tasks') {
+            tasksView.classList.remove('hidden');
+            leadView.classList.add('hidden');
+            btns[0].classList.add('active');
+        } else {
+            tasksView.classList.add('hidden');
+            leadView.classList.remove('hidden');
+            btns[1].classList.add('active');
         }
     }
 </script>
