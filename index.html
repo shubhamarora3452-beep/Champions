@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Portal</title>
     <style>
-        :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; }
+        :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; --border-color: #d1d5db; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--light-bg); color: #333; }
         .hidden { display: none !important; }
         
         /* 1. LOGIN SCREEN */
         #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #eee; }
         .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
         .btn-login { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; }
 
         /* 2. MAIN DASHBOARD LAYOUT */
         #dashboard-screen { display: flex; min-height: 100vh; }
 
         /* SIDEBAR (Left Pane) */
-        .sidebar { width: 260px; background: var(--blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar { 
+            width: 260px; 
+            background: var(--blue); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+            border-right: 2px solid #ccc; /* THE GRAY SEPARATION LINE */
+        }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .nav-list { flex-grow: 1; padding-top: 20px; }
         .nav-item { 
@@ -32,38 +40,23 @@
 
         /* CONTENT AREA (Right Pane) */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        
-        /* THE NEW BLUE TOP SECTION */
-        .top-banner {
-            width: 100%;
-            padding: 60px 0; /* Creates the height for the section */
-            background-color: var(--blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .top-banner h1 { 
-            color: white; 
-            margin: 0; 
-            font-size: 42px; /* Bigger Font */
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .top-banner { width: 100%; padding: 60px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
+        .top-banner h1 { color: white; margin: 0; font-size: 38px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
         
         header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
         .container { padding: 40px; }
+
+        /* PROFILE FORM STYLING */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+        label { font-weight: bold; font-size: 14px; color: var(--blue); }
 
         /* TABLES & UI */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f1f5f9; color: var(--blue); text-transform: uppercase; font-size: 12px; }
-        .rank-icon { font-size: 18px; margin-right: 5px; }
         .badge-points { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; }
-        .logout { background: #eee; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; transition: 0.3s; }
-        .logout:hover { background: #fca5a5; color: #7f1d1d; }
+        .logout { background: #eee; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -80,13 +73,14 @@
         
         <div class="sidebar">
             <div class="sidebar-header">
-                <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px;">CHAMPIONS</div>
-                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">STUDENT PROGRAM</div>
+                <div style="font-size: 20px; font-weight: bold;">CHAMPIONS</div>
+                <div style="font-size: 12px; opacity: 0.7;">STUDENT PROGRAM</div>
             </div>
             
             <div class="nav-list">
                 <button id="btn-t" class="nav-item active" onclick="tab('tasks')">📋 My Tasks</button>
                 <button id="btn-l" class="nav-item" onclick="tab('leaderboard')">🏆 Leaderboard</button>
+                <button id="btn-p" class="nav-item" onclick="tab('profile')">👤 My Profile</button>
             </div>
 
             <div class="sidebar-footer">
@@ -100,7 +94,7 @@
             </div>
 
             <header>
-                <div>Welcome back, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span></div>
+                <div>Welcome, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span></div>
                 <div id="current-date" style="font-size: 12px; color: #666;"></div>
             </header>
 
@@ -120,6 +114,50 @@
                         <tbody id="table-l"></tbody>
                     </table>
                 </div>
+
+                <div id="view-p" class="hidden">
+                    <h2 style="margin-top:0">Complete Your Profile</h2>
+                    <div class="profile-grid">
+                        <div>
+                            <label>First Name</label>
+                            <input type="text" placeholder="Enter First Name">
+                        </div>
+                        <div>
+                            <label>Last Name</label>
+                            <input type="text" placeholder="Enter Last Name">
+                        </div>
+                        <div class="full-width">
+                            <label>3DEXPERIENCE Email ID</label>
+                            <input type="email" placeholder="email@3ds.com">
+                        </div>
+                        <div>
+                            <label>Country</label>
+                            <select id="country-list">
+                                <option value="">Select Country</option>
+                                <option value="USA">United States</option>
+                                <option value="India">India</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="France">France</option>
+                                <option value="Germany">Germany</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Australia">Australia</option>
+                                </select>
+                        </div>
+                        <div>
+                            <label>School Name</label>
+                            <input type="text" placeholder="University/School Name">
+                        </div>
+                        <div class="full-width">
+                            <label>School City</label>
+                            <input type="text" placeholder="City">
+                        </div>
+                        <div class="full-width">
+                            <label>About yourself in 100 words</label>
+                            <textarea rows="4" maxlength="600" placeholder="Tell us about your journey..."></textarea>
+                        </div>
+                    </div>
+                    <button class="btn-login" style="margin-top:20px; width:200px;">Save Profile</button>
+                </div>
             </div>
         </div>
     </div>
@@ -128,44 +166,32 @@
     const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
     let csvData = [];
 
-    // Set Date Display
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString();
 
     async function processLogin() {
         const email = document.getElementById('user-email').value.trim().toLowerCase();
-        if(!email) return alert("Please enter email");
-
+        if(!email) return alert("Enter email");
         try {
             const res = await fetch(SHEET_LINK);
             const text = await res.text();
             csvData = text.split(/\r?\n/).map(line => line.split(','));
-            const userMatch = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
-
-            if (userMatch) {
+            const user = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
+            if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
-                document.getElementById('display-name').innerText = userMatch[0];
+                document.getElementById('display-name').innerText = user[0];
                 loadTasks(email);
                 loadLeaderboard();
-            } else {
-                alert("Email not found.");
-            }
-        } catch (error) {
-            alert("Connection error.");
-        }
+            } else { alert("User not found."); }
+        } catch (e) { alert("Error loading data."); }
     }
 
-    function loadTasks(userEmail) {
+    function loadTasks(email) {
         const tbody = document.getElementById('table-t');
         tbody.innerHTML = "";
         csvData.slice(1).forEach(row => {
-            if(row[1] && row[1].toLowerCase().trim() === userEmail) {
-                tbody.innerHTML += `<tr>
-                    <td><b>${row[2] || 'Task'}</b></td>
-                    <td>${row[3] || 'General'}</td>
-                    <td><span class="badge-points">${row[4] || '0'}</span></td>
-                    <td style="color:green; font-weight:bold;">${row[5] || 'Active'}</td>
-                </tr>`;
+            if(row[1] && row[1].toLowerCase().trim() === email) {
+                tbody.innerHTML += `<tr><td><b>${row[2]}</b></td><td>${row[3]}</td><td><span class="badge-points">${row[4]}</span></td><td>${row[5]}</td></tr>`;
             }
         });
     }
@@ -179,26 +205,18 @@
             if(name) totals[name] = (totals[name] || 0) + pts;
         });
         const sorted = Object.keys(totals).sort((a,b) => totals[b] - totals[a]);
-        
         sorted.forEach((name, i) => {
-            let rankDisplay = `#${i+1}`;
-            if(i === 0) rankDisplay = `<span class="rank-icon">🏆</span> #1`;
-            if(i === 1) rankDisplay = `<span class="rank-icon">🥈</span> #2`;
-            if(i === 2) rankDisplay = `<span class="rank-icon">🥉</span> #3`;
-
-            tbody.innerHTML += `<tr>
-                <td>${rankDisplay}</td>
-                <td>${name}</td>
-                <td><span class="badge-points">${totals[name]}</span></td>
-            </tr>`;
+            tbody.innerHTML += `<tr><td>#${i+1}</td><td>${name}</td><td><b>${totals[name]}</b></td></tr>`;
         });
     }
 
     function tab(name) {
         document.getElementById('view-t').classList.toggle('hidden', name !== 'tasks');
         document.getElementById('view-l').classList.toggle('hidden', name !== 'leaderboard');
+        document.getElementById('view-p').classList.toggle('hidden', name !== 'profile');
         document.getElementById('btn-t').classList.toggle('active', name === 'tasks');
         document.getElementById('btn-l').classList.toggle('active', name === 'leaderboard');
+        document.getElementById('btn-p').classList.toggle('active', name === 'profile');
     }
 </script>
 </body>
