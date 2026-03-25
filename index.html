@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students Champions Program Dashboard</title>
+    <title>Edu Student Champions Program Dashboard</title>
     <style>
         :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--light-bg); color: #333; }
         .hidden { display: none !important; }
         
-        /* LOGIN SCREEN */
-        #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #eee; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; text-align: center; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        /* 1. LOGIN SCREEN */
+        #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        .login-logo { max-width: 180px; height: auto; margin-bottom: 20px; }
+        .login-highlight { color: var(--blue); font-weight: 800; font-size: 18px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        
+        /* LOADING BAR */
+        #loading-container { width: 100%; background: #eee; height: 4px; border-radius: 2px; margin-top: 15px; overflow: hidden; display: none; }
+        #loading-bar { width: 0%; height: 100%; background: var(--blue); transition: width 0.4s ease; }
+
         .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.3s; }
 
-        /* MAIN DASHBOARD LAYOUT */
+        /* 2. MAIN DASHBOARD LAYOUT */
         #dashboard-screen { display: flex; min-height: 100vh; }
 
         /* SIDEBAR */
@@ -30,14 +37,14 @@
             position: relative;
         }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .company-logo { max-width: 100%; height: auto; margin-bottom: 10px; }
+        .sidebar-logo { max-width: 100%; height: auto; }
         
         .nav-list { flex-grow: 1; padding-top: 20px; }
         .nav-item { width: 100%; padding: 12px 25px; border: none; background: none; color: white; text-align: left; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .nav-item:hover { background: var(--dark); }
         .nav-item.active { background: var(--light-bg); color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
 
-        /* SPARKLE BADGE - ANCHORED 5CM FROM BOTTOM */
+        /* SPARKLE BADGE - 7.5CM FROM BOTTOM */
         .badge-area { 
             position: absolute; 
             bottom: 7.5cm; 
@@ -46,63 +53,25 @@
             display: flex; 
             justify-content: center; 
             pointer-events: none;
-            overflow: hidden; /* Contains the sparkle inside the container if it overlaps */
         }
-
-        .shimmer-wrapper {
-            position: relative;
-            width: 173px;
-            height: auto;
-            overflow: hidden; /* Crops the sparkle to the image boundaries */
-            border-radius: 12px; /* Slight rounding on the "shimmer" effect */
-        }
-
-        .champion-badge-img { 
-            width: 100%; /* Spans the wrapper */
-            height: auto; 
-            opacity: 1; 
-            display: block;
-        }
-
-        /* The moving sparkle element */
+        .shimmer-wrapper { position: relative; width: 173px; overflow: hidden; border-radius: 12px; }
+        .champion-badge-img { width: 100%; height: auto; display: block; }
         .shimmer-wrapper::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -150%; /* Starts off-screen to the left */
-            width: 150%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.4) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: skewX(-20deg); /* Diagonal shimmer */
-            animation: sparkle 3s infinite; /* Runs indefinitely every 3s */
+            content: ""; position: absolute; top: 0; left: -150%; width: 150%; height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg); animation: sparkle 3.5s infinite;
         }
-
-        /* Sparkle animation definition */
-        @keyframes sparkle {
-            0% { left: -150%; }
-            30% { left: 100%; } /* Fast sweep across */
-            100% { left: 100%; } /* Long pause at the end */
-        }
+        @keyframes sparkle { 0% { left: -150%; } 25% { left: 100%; } 100% { left: 100%; } }
 
         /* CONTENT AREA */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .top-banner { width: 100%; padding: 50px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
-        .top-banner h1 { color: white; margin: 0; font-size: 30px; font-weight: 800; text-transform: uppercase; }
+        .top-banner { width: 100%; padding: 60px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
+        .top-banner h1 { color: white; margin: 0; font-size: 34px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         
         header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
         .logout-link { color: #d63031; font-size: 13px; font-weight: bold; text-decoration: none; cursor: pointer; border: 1px solid #d63031; padding: 5px 12px; border-radius: 4px; }
 
         .container { padding: 30px 40px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        .post-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; }
-        .post-thumb { width: 80px; height: 80px; background: #ddd; border-radius: 4px; object-fit: cover; }
-
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f1f5f9; color: var(--blue); text-transform: uppercase; font-size: 12px; }
@@ -112,17 +81,23 @@
 
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="color:var(--blue)">Champion Login</h2>
-            <input type="email" id="user-email" placeholder="email@example.com">
-            <button class="btn-main" onclick="processLogin()">Access Dashboard</button>
+            <img src="company-logo.png" alt="Company Logo" class="login-logo" onerror="this.style.display='none'">
+            <div class="login-highlight">Edu Student Champions Program Dashboard</div>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">WELCOME! Please log in to your dashboard.</p>
+            
+            <input type="email" id="user-email" placeholder="Enter your registered email">
+            <button class="btn-main" id="login-btn" onclick="processLogin()">Access Dashboard</button>
+            
+            <div id="loading-container">
+                <div id="loading-bar"></div>
+            </div>
         </div>
     </div>
 
     <div id="dashboard-screen" class="hidden">
         <div class="sidebar">
             <div class="sidebar-header">
-                <img src="company-logo.png" alt="Logo" class="company-logo" onerror="this.style.display='none'">
-                <div style="font-size: 11px; opacity: 0.7;">STUDENT PROGRAM</div>
+                <img src="company-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
             </div>
             
             <div class="nav-list">
@@ -146,7 +121,7 @@
             </div>
 
             <header>
-                <div>Welcome, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span></div>
+                <div>WELCOME back, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span>!</div>
                 <button class="logout-link" onclick="location.reload()">LOGOUT</button>
             </header>
 
@@ -169,41 +144,22 @@
 
                 <div id="view-p" class="hidden">
                     <h2>My Profile</h2>
-                    <div class="grid-2">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div><label>First Name</label><input type="text"></div>
                         <div><label>Last Name</label><input type="text"></div>
-                        <div style="grid-column: span 2;"><label>3DEXPERIENCE Email</label><input type="email" placeholder="email@domain.com"></div>
-                        <div><label>Instagram Handle</label><input type="text" placeholder="@username"></div>
-                        <div><label>LinkedIn Link</label><input type="text" placeholder="linkedin.com/in/..."></div>
-                        <div><label>School Name</label><input type="text"></div>
-                        <div><label>School City</label><input type="text"></div>
-                        <div style="grid-column: span 2;"><label>Tell us about yourself</label><textarea rows="3"></textarea></div>
+                        <div style="grid-column: span 2;"><label>Instagram Handle</label><input type="text" placeholder="@username"></div>
+                        <div style="grid-column: span 2;"><label>LinkedIn Link</label><input type="text" placeholder="URL"></div>
                     </div>
-                    <button class="btn-main" style="width:150px; margin-top:10px;">Save Profile</button>
                 </div>
 
                 <div id="view-r" class="hidden">
-                    <div class="grid-2">
-                        <div>
-                            <h2>Submit New Post</h2>
-                            <label>Title</label><input type="text" id="post-title">
-                            <label>Brief</label><textarea id="post-brief" rows="3"></textarea>
-                            <label>Media Link</label><input type="text" id="post-media" placeholder="Image/Video URL">
-                            <button class="btn-main" onclick="submitPost()">Submit</button>
-                        </div>
-                        <div>
-                            <h2>Posts Submitted</h2>
-                            <div id="submitted-posts-list"></div>
-                        </div>
-                    </div>
+                    <h2>Get Recognized</h2>
+                    <p>Submit your social posts here to earn extra points.</p>
                 </div>
 
                 <div id="view-h" class="hidden">
                     <h2>How to gain points</h2>
-                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--blue); margin-bottom: 15px;">
-                        <h3>✅ Complete Challenges</h3>
-                        <p>Finish tasks listed in the "My Tasks" tab.</p>
-                    </div>
+                    <p>Details on task completion and community engagement.</p>
                 </div>
             </div>
         </div>
@@ -216,20 +172,38 @@
     async function processLogin() {
         const email = document.getElementById('user-email').value.trim().toLowerCase();
         if(!email) return alert("Enter email");
+        
+        // Show Loading UI
+        document.getElementById('loading-container').style.display = 'block';
+        const bar = document.getElementById('loading-bar');
+        bar.style.width = "30%";
+
         try {
             const res = await fetch(SHEET_LINK);
+            bar.style.width = "70%";
             const text = await res.text();
             csvData = text.split(/\r?\n/).map(line => line.split(','));
             const user = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
-                document.getElementById('display-name').innerText = user[0];
-                loadTasks(email);
-                loadLeaderboard();
-                displayStoredPosts();
-            } else { alert("User not found."); }
-        } catch (e) { alert("Data error."); }
+            
+            bar.style.width = "100%";
+
+            setTimeout(() => {
+                if (user) {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    document.getElementById('display-name').innerText = user[0];
+                    loadTasks(email);
+                    loadLeaderboard();
+                } else {
+                    alert("User not found.");
+                    document.getElementById('loading-container').style.display = 'none';
+                    bar.style.width = "0%";
+                }
+            }, 500);
+        } catch (e) { 
+            alert("Data error.");
+            document.getElementById('loading-container').style.display = 'none';
+        }
     }
 
     function loadTasks(email) {
@@ -256,34 +230,13 @@
         });
     }
 
-    function submitPost() {
-        const title = document.getElementById('post-title').value;
-        const brief = document.getElementById('post-brief').value;
-        const media = document.getElementById('post-media').value || 'https://via.placeholder.com/80';
-        if(!title || !brief) return alert("Fill in the fields.");
-        const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
-        posts.push({ title, brief, media });
-        localStorage.setItem('myPosts', JSON.stringify(posts));
-        displayStoredPosts();
-    }
-
-    function displayStoredPosts() {
-        const list = document.getElementById('submitted-posts-list');
-        const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
-        if(posts.length === 0) return;
-        list.innerHTML = posts.map(p => `
-            <div class="post-card">
-                <img src="${p.media}" class="post-thumb" onerror="this.src='https://via.placeholder.com/80'">
-                <div><b>${p.title}</b><br><small>${p.brief}</small></div>
-            </div>
-        `).join('');
-    }
-
     function tab(name) {
+        const keyMap = { 'recognized': 'r', 'howtopoints': 'h', 'tasks': 't', 'leaderboard': 'l', 'profile': 'p' };
+        const key = keyMap[name] || name[0];
         ['t', 'l', 'p', 'r', 'h'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
-        document.getElementById('view-' + name[0]).classList.remove('hidden');
+        document.getElementById('view-' + key).classList.remove('hidden');
         ['t', 'l', 'p', 'r', 'h'].forEach(b => document.getElementById('btn-' + b).classList.remove('active'));
-        document.getElementById('btn-' + name[0]).classList.add('active');
+        document.getElementById('btn-' + key).classList.add('active');
     }
 </script>
 </body>
