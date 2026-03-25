@@ -9,18 +9,26 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--light-bg); color: #333; }
         .hidden { display: none !important; }
         
-        /* 1. LOGIN SCREEN */
+        /* LOGIN SCREEN */
         #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #eee; }
         .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; text-align: center; }
         input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
         .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.3s; }
-        .btn-main:hover { background: var(--dark); }
 
-        /* 2. MAIN DASHBOARD LAYOUT */
+        /* MAIN DASHBOARD LAYOUT */
         #dashboard-screen { display: flex; min-height: 100vh; }
 
         /* SIDEBAR */
-        .sidebar { width: 260px; background: var(--blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid rgba(0,0,0,0.15); }
+        .sidebar { 
+            width: 260px; 
+            background: var(--blue); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+            border-right: 1px solid rgba(0,0,0,0.15); 
+            position: relative;
+        }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .company-logo { max-width: 100%; height: auto; margin-bottom: 10px; }
         
@@ -29,29 +37,71 @@
         .nav-item:hover { background: var(--dark); }
         .nav-item.active { background: var(--light-bg); color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
 
-        /* CENTERED BADGE BELOW PROFILE */
-        .badge-area { padding: 20px 0; display: flex; justify-content: center; align-items: center; width: 100%; }
-        .champion-badge-img { width: 144px; height: auto; opacity: 0.95; }
+        /* SPARKLE BADGE - ANCHORED 15CM FROM BOTTOM */
+        .badge-area { 
+            position: absolute; 
+            bottom: 15cm; 
+            left: 0; 
+            right: 0; 
+            display: flex; 
+            justify-content: center; 
+            pointer-events: none;
+            overflow: hidden; /* Contains the sparkle inside the container if it overlaps */
+        }
+
+        .shimmer-wrapper {
+            position: relative;
+            width: 144px;
+            height: auto;
+            overflow: hidden; /* Crops the sparkle to the image boundaries */
+            border-radius: 12px; /* Slight rounding on the "shimmer" effect */
+        }
+
+        .champion-badge-img { 
+            width: 100%; /* Spans the wrapper */
+            height: auto; 
+            opacity: 1; 
+            display: block;
+        }
+
+        /* The moving sparkle element */
+        .shimmer-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -150%; /* Starts off-screen to the left */
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-20deg); /* Diagonal shimmer */
+            animation: sparkle 3s infinite; /* Runs indefinitely every 3s */
+        }
+
+        /* Sparkle animation definition */
+        @keyframes sparkle {
+            0% { left: -150%; }
+            30% { left: 100%; } /* Fast sweep across */
+            100% { left: 100%; } /* Long pause at the end */
+        }
 
         /* CONTENT AREA */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .top-banner { width: 100%; padding: 50px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; position: relative; }
+        .top-banner { width: 100%; padding: 50px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
         .top-banner h1 { color: white; margin: 0; font-size: 30px; font-weight: 800; text-transform: uppercase; }
         
-        /* LOGOUT ON TOP RIGHT OF HEADER */
         header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
         .logout-link { color: #d63031; font-size: 13px; font-weight: bold; text-decoration: none; cursor: pointer; border: 1px solid #d63031; padding: 5px 12px; border-radius: 4px; }
-        .logout-link:hover { background: #d63031; color: white; }
 
         .container { padding: 30px 40px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* SUBMISSION POST CARDS */
         .post-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; }
         .post-thumb { width: 80px; height: 80px; background: #ddd; border-radius: 4px; object-fit: cover; }
-
-        /* HOW TO GAIN POINTS CARDS */
-        .point-rule { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
 
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
@@ -69,7 +119,6 @@
     </div>
 
     <div id="dashboard-screen" class="hidden">
-        
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="company-logo.png" alt="Logo" class="company-logo" onerror="this.style.display='none'">
@@ -85,7 +134,9 @@
             </div>
 
             <div class="badge-area">
-                <img src="champion-badge.png" alt="Badge" class="champion-badge-img" onerror="this.style.display='none'">
+                <div class="shimmer-wrapper">
+                    <img src="champion-badge.png" alt="Badge" class="champion-badge-img" onerror="this.style.display='none'">
+                </div>
             </div>
         </div>
 
@@ -135,33 +186,23 @@
                     <div class="grid-2">
                         <div>
                             <h2>Submit New Post</h2>
-                            <label>Title of the post</label><input type="text" id="post-title">
-                            <label>Brief of the post</label><textarea id="post-brief" rows="3"></textarea>
-                            <label>Attach Image/Video URL</label><input type="text" id="post-media" placeholder="Link to your image/video">
-                            <button class="btn-main" onclick="submitPost()">Submit for Recognition</button>
+                            <label>Title</label><input type="text" id="post-title">
+                            <label>Brief</label><textarea id="post-brief" rows="3"></textarea>
+                            <label>Media Link</label><input type="text" id="post-media" placeholder="Image/Video URL">
+                            <button class="btn-main" onclick="submitPost()">Submit</button>
                         </div>
                         <div>
                             <h2>Posts Submitted</h2>
-                            <div id="submitted-posts-list">
-                                <p style="color:#666; font-style:italic;">No posts submitted yet.</p>
-                            </div>
+                            <div id="submitted-posts-list"></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="view-h" class="hidden">
                     <h2>How to gain points</h2>
-                    <div class="point-rule">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--blue); margin-bottom: 15px;">
                         <h3>✅ Complete Challenges</h3>
-                        <p>Finish tasks listed in the "My Tasks" tab. Points are awarded based on the complexity of the task once verified by the community manager.</p>
-                    </div>
-                    <div class="point-rule">
-                        <h3>📢 Recommend Posts</h3>
-                        <p>Engage with your peers. Recommending and commenting on high-quality posts in the community portal earns you 10 points per interaction.</p>
-                    </div>
-                    <div class="point-rule">
-                        <h3>📱 Social Media Sharing</h3>
-                        <p>Share program updates or your own success stories on LinkedIn or Instagram. Tag the program and submit your link in the "Get Recognized" tab to earn 50 points.</p>
+                        <p>Finish tasks listed in the "My Tasks" tab.</p>
                     </div>
                 </div>
             </div>
@@ -219,16 +260,10 @@
         const title = document.getElementById('post-title').value;
         const brief = document.getElementById('post-brief').value;
         const media = document.getElementById('post-media').value || 'https://via.placeholder.com/80';
-        
-        if(!title || !brief) return alert("Fill in the title and brief.");
-
+        if(!title || !brief) return alert("Fill in the fields.");
         const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
         posts.push({ title, brief, media });
         localStorage.setItem('myPosts', JSON.stringify(posts));
-        
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-brief').value = '';
-        document.getElementById('post-media').value = '';
         displayStoredPosts();
     }
 
@@ -239,21 +274,15 @@
         list.innerHTML = posts.map(p => `
             <div class="post-card">
                 <img src="${p.media}" class="post-thumb" onerror="this.src='https://via.placeholder.com/80'">
-                <div>
-                    <div style="font-weight:bold; color:var(--blue);">${p.title}</div>
-                    <div style="font-size:12px; color:#666;">${p.brief}</div>
-                </div>
+                <div><b>${p.title}</b><br><small>${p.brief}</small></div>
             </div>
         `).join('');
     }
 
     function tab(name) {
-        const views = ['t', 'l', 'p', 'r', 'h'];
-        views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+        ['t', 'l', 'p', 'r', 'h'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
         document.getElementById('view-' + name[0]).classList.remove('hidden');
-        
-        const btns = ['t', 'l', 'p', 'r', 'h'];
-        btns.forEach(b => document.getElementById('btn-' + b).classList.remove('active'));
+        ['t', 'l', 'p', 'r', 'h'].forEach(b => document.getElementById('btn-' + b).classList.remove('active'));
         document.getElementById('btn-' + name[0]).classList.add('active');
     }
 </script>
