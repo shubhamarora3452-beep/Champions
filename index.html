@@ -37,7 +37,7 @@
         .nav-item { width: 100%; padding: 12px 25px; border: none; background: none; color: white; text-align: left; font-size: 14px; font-weight: bold; cursor: pointer; }
         .nav-item.active { background: var(--light-bg); color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
 
-        /* SPARKLE BADGE - 7.5CM FROM BOTTOM */
+        /* SPARKLE BADGE */
         .badge-area { position: absolute; bottom: 7.5cm; left: 0; right: 0; display: flex; justify-content: center; pointer-events: none; }
         .shimmer-wrapper { position: relative; width: 173px; overflow: hidden; border-radius: 12px; }
         .champion-badge-img { width: 100%; height: auto; display: block; }
@@ -59,11 +59,9 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
 
-        /* SUBMISSION CARDS */
         .post-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .post-thumb { width: 60px; height: 60px; background: #ddd; border-radius: 4px; object-fit: cover; }
         
-        /* POINT RULES */
         .point-rule { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
 
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -107,7 +105,7 @@
             <div class="top-banner"><h1>Students Champions Program Dashboard</h1></div>
             <header>
                 <div>WELCOME back, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span>!</div>
-                <button class="logout-link" onclick="location.reload()">LOGOUT</button>
+                <button class="logout-link" onclick="handleLogout()">LOGOUT</button>
             </header>
 
             <div class="container">
@@ -153,16 +151,15 @@
                         </div>
                         <div>
                             <h2>Posts Submitted</h2>
-                            <div id="submitted-posts-list"><p style="color:#666;">No submissions yet.</p></div>
+                            <div id="submitted-posts-list"></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="view-h" class="hidden">
                     <h2>How to gain points</h2>
-                    <div class="point-rule"><h3>✅ Complete Tasks</h3><p>Finish active challenges to earn high-tier points.</p></div>
+                    <div class="point-rule"><h3>✅ Complete Tasks</h3><p>Finish active challenges to earn points.</p></div>
                     <div class="point-rule"><h3>📢 Social Sharing</h3><p>Earn 50 points by sharing updates on LinkedIn/Instagram.</p></div>
-                    <div class="point-rule"><h3>🤝 Recommendations</h3><p>Engage with peer content to earn 10 points per interaction.</p></div>
                 </div>
             </div>
         </div>
@@ -172,32 +169,62 @@
     const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
     let csvData = [];
 
+    // ON PAGE LOAD: Check for existing session
+    window.onload = function() {
+        const savedEmail = localStorage.getItem('championUserEmail');
+        if (savedEmail) {
+            autoLogin(savedEmail);
+        }
+    };
+
     async function processLogin() {
         const email = document.getElementById('user-email').value.trim().toLowerCase();
         if(!email) return alert("Enter email");
+        
         document.getElementById('loading-container').style.display = 'block';
         const bar = document.getElementById('loading-bar');
-        bar.style.width = "30%";
+        bar.style.width = "40%";
+
         try {
             const res = await fetch(SHEET_LINK);
-            bar.style.width = "70%";
             const text = await res.text();
             csvData = text.split(/\r?\n/).map(line => line.split(','));
             const user = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
-            bar.style.width = "100%";
-            setTimeout(() => {
-                if (user) {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
-                    document.getElementById('display-name').innerText = user[0];
-                    loadTasks(email); loadLeaderboard(); displayStoredPosts();
-                } else {
-                    alert("User not found.");
-                    document.getElementById('loading-container').style.display = 'none';
-                    bar.style.width = "0%";
-                }
-            }, 500);
-        } catch (e) { alert("Data error."); document.getElementById('loading-container').style.display = 'none'; }
+            
+            if (user) {
+                bar.style.width = "100%";
+                localStorage.setItem('championUserEmail', email); // SAVE SESSION
+                setTimeout(() => showDashboard(user[0], email), 500);
+            } else {
+                alert("User not found.");
+                document.getElementById('loading-container').style.display = 'none';
+            }
+        } catch (e) { alert("Data error."); }
+    }
+
+    async function autoLogin(email) {
+        try {
+            const res = await fetch(SHEET_LINK);
+            const text = await res.text();
+            csvData = text.split(/\r?\n/).map(line => line.split(','));
+            const user = csvData.find(row => row[1] && row[1].toLowerCase().trim() === email);
+            if (user) showDashboard(user[0], email);
+            else handleLogout();
+        } catch (e) { console.error("Auto-login failed"); }
+    }
+
+    function showDashboard(name, email) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+        document.getElementById('display-name').innerText = name;
+        loadTasks(email);
+        loadLeaderboard();
+        displayStoredPosts();
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('championUserEmail'); // CLEAR SESSION
+        location.reload();
     }
 
     function loadTasks(email) {
@@ -228,12 +255,13 @@
         const title = document.getElementById('post-title').value;
         const brief = document.getElementById('post-brief').value;
         const media = document.getElementById('post-media').value || 'https://via.placeholder.com/80';
-        if(!title || !brief) return alert("Fill in the fields.");
+        if(!title || !brief) return alert("Fill fields.");
         const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
         posts.push({ title, brief, media });
         localStorage.setItem('myPosts', JSON.stringify(posts));
         displayStoredPosts();
-        document.getElementById('post-title').value = ''; document.getElementById('post-brief').value = ''; document.getElementById('post-media').value = '';
+        document.getElementById('post-title').value = ''; 
+        document.getElementById('post-brief').value = '';
     }
 
     function displayStoredPosts() {
