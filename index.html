@@ -13,65 +13,49 @@
         #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #eee; }
         .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; text-align: center; }
         input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
-        .btn-login { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; }
+        .btn-main { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.3s; }
+        .btn-main:hover { background: var(--dark); }
 
         /* 2. MAIN DASHBOARD LAYOUT */
         #dashboard-screen { display: flex; min-height: 100vh; }
 
-        /* SIDEBAR (Left Pane) */
-        .sidebar { 
-            width: 260px; 
-            background: var(--blue); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            flex-shrink: 0; 
-            /* REDUCED WIDTH OF GRAY LINE */
-            border-right: 1px solid rgba(0,0,0,0.15); 
-        }
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid rgba(0,0,0,0.15); }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        
         .company-logo { max-width: 100%; height: auto; margin-bottom: 10px; }
-
+        
         .nav-list { flex-grow: 1; padding-top: 20px; }
-        .nav-item { width: 100%; padding: 15px 25px; border: none; background: none; color: white; text-align: left; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .nav-item { width: 100%; padding: 12px 25px; border: none; background: none; color: white; text-align: left; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .nav-item:hover { background: var(--dark); }
         .nav-item.active { background: var(--light-bg); color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
 
-        /* BADGE AREA - CENTERED AND LARGER */
-        .badge-area { 
-            padding: 30px 10px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-        }
-        .champion-badge-img { 
-            width: 144px; /* Increased by 20% from 120px */
-            height: auto; 
-            opacity: 0.95; 
-        }
+        /* CENTERED BADGE BELOW PROFILE */
+        .badge-area { padding: 20px 0; display: flex; justify-content: center; align-items: center; width: 100%; }
+        .champion-badge-img { width: 144px; height: auto; opacity: 0.95; }
 
-        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-
-        /* CONTENT AREA (Right Pane) */
+        /* CONTENT AREA */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .top-banner { width: 100%; padding: 60px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
-        .top-banner h1 { color: white; margin: 0; font-size: 34px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .top-banner { width: 100%; padding: 50px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; position: relative; }
+        .top-banner h1 { color: white; margin: 0; font-size: 30px; font-weight: 800; text-transform: uppercase; }
         
+        /* LOGOUT ON TOP RIGHT OF HEADER */
         header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
-        .container { padding: 40px; }
+        .logout-link { color: #d63031; font-size: 13px; font-weight: bold; text-decoration: none; cursor: pointer; border: 1px solid #d63031; padding: 5px 12px; border-radius: 4px; }
+        .logout-link:hover { background: #d63031; color: white; }
 
-        /* PROFILE GRID */
-        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full-width { grid-column: span 2; }
-        label { font-weight: bold; font-size: 14px; color: var(--blue); }
+        .container { padding: 30px 40px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* TABLES */
+        /* SUBMISSION POST CARDS */
+        .post-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; }
+        .post-thumb { width: 80px; height: 80px; background: #ddd; border-radius: 4px; object-fit: cover; }
+
+        /* HOW TO GAIN POINTS CARDS */
+        .point-rule { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
+
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f1f5f9; color: var(--blue); text-transform: uppercase; font-size: 12px; }
-        .badge-points { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; }
-        .logout { background: #eee; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -80,7 +64,7 @@
         <div class="login-card">
             <h2 style="color:var(--blue)">Champion Login</h2>
             <input type="email" id="user-email" placeholder="email@example.com">
-            <button class="btn-login" onclick="processLogin()">Access Dashboard</button>
+            <button class="btn-main" onclick="processLogin()">Access Dashboard</button>
         </div>
     </div>
 
@@ -88,22 +72,20 @@
         
         <div class="sidebar">
             <div class="sidebar-header">
-                <img src="company-logo.png" alt="Company Logo" class="company-logo" onerror="this.style.display='none'">
-                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">STUDENT PROGRAM</div>
+                <img src="company-logo.png" alt="Logo" class="company-logo" onerror="this.style.display='none'">
+                <div style="font-size: 11px; opacity: 0.7;">STUDENT PROGRAM</div>
             </div>
             
             <div class="nav-list">
                 <button id="btn-t" class="nav-item active" onclick="tab('tasks')">📋 My Tasks</button>
                 <button id="btn-l" class="nav-item" onclick="tab('leaderboard')">🏆 Leaderboard</button>
                 <button id="btn-p" class="nav-item" onclick="tab('profile')">👤 My Profile</button>
+                <button id="btn-r" class="nav-item" onclick="tab('recognized')">📢 Get Recognized</button>
+                <button id="btn-h" class="nav-item" onclick="tab('howtopoints')">💡 Gain Points</button>
             </div>
 
             <div class="badge-area">
-                <img src="champion-badge.png" alt="Champion Badge" class="champion-badge-img" onerror="this.style.display='none'">
-            </div>
-
-            <div class="sidebar-footer">
-                <button class="logout" style="width:100%" onclick="location.reload()">Log Out</button>
+                <img src="champion-badge.png" alt="Badge" class="champion-badge-img" onerror="this.style.display='none'">
             </div>
         </div>
 
@@ -114,12 +96,12 @@
 
             <header>
                 <div>Welcome, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span></div>
-                <div id="current-date" style="font-size: 12px; color: #666;"></div>
+                <button class="logout-link" onclick="location.reload()">LOGOUT</button>
             </header>
 
             <div class="container">
                 <div id="view-t">
-                    <h2 style="margin-top:0">Your Active Challenges</h2>
+                    <h2>Active Challenges</h2>
                     <table>
                         <thead><tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
                         <tbody id="table-t"></tbody>
@@ -127,7 +109,7 @@
                 </div>
 
                 <div id="view-l" class="hidden">
-                    <h2 style="margin-top:0">Global Champion Rankings</h2>
+                    <h2>Global Rankings</h2>
                     <table>
                         <thead><tr><th>Rank</th><th>Name</th><th>Total Points</th></tr></thead>
                         <tbody id="table-l"></tbody>
@@ -135,26 +117,52 @@
                 </div>
 
                 <div id="view-p" class="hidden">
-                    <h2 style="margin-top:0">My Profile</h2>
-                    <div class="profile-grid">
-                        <div><label>First Name</label><input type="text" placeholder="First Name"></div>
-                        <div><label>Last Name</label><input type="text" placeholder="Last Name"></div>
-                        <div class="full-width"><label>3DEXPERIENCE Email ID</label><input type="email" placeholder="email@domain.com"></div>
+                    <h2>My Profile</h2>
+                    <div class="grid-2">
+                        <div><label>First Name</label><input type="text"></div>
+                        <div><label>Last Name</label><input type="text"></div>
+                        <div style="grid-column: span 2;"><label>3DEXPERIENCE Email</label><input type="email" placeholder="email@domain.com"></div>
+                        <div><label>Instagram Handle</label><input type="text" placeholder="@username"></div>
+                        <div><label>LinkedIn Link</label><input type="text" placeholder="linkedin.com/in/..."></div>
+                        <div><label>School Name</label><input type="text"></div>
+                        <div><label>School City</label><input type="text"></div>
+                        <div style="grid-column: span 2;"><label>Tell us about yourself</label><textarea rows="3"></textarea></div>
+                    </div>
+                    <button class="btn-main" style="width:150px; margin-top:10px;">Save Profile</button>
+                </div>
+
+                <div id="view-r" class="hidden">
+                    <div class="grid-2">
                         <div>
-                            <label>Country</label>
-                            <select id="country-list">
-                                <option value="">Select Country</option>
-                                <option value="Afghanistan">Afghanistan</option> <option value="Albania">Albania</option> <option value="Algeria">Algeria</option> <option value="Andorra">Andorra</option> <option value="Angola">Angola</option> <option value="Antigua and Barbuda">Antigua and Barbuda</option> <option value="Argentina">Argentina</option> <option value="Armenia">Armenia</option> <option value="Australia">Australia</option> <option value="Austria">Austria</option> <option value="Azerbaijan">Azerbaijan</option> <option value="Bahamas">Bahamas</option> <option value="Bahrain">Bahrain</option> <option value="Bangladesh">Bangladesh</option> <option value="Barbados">Barbados</option> <option value="Belarus">Belarus</option> <option value="Belgium">Belgium</option> <option value="Belize">Belize</option> <option value="Benin">Benin</option> <option value="Bhutan">Bhutan</option> <option value="Bolivia">Bolivia</option> <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option> <option value="Botswana">Botswana</option> <option value="Brazil">Brazil</option> <option value="Brunei">Brunei</option> <option value="Bulgaria">Bulgaria</option> <option value="Burkina Faso">Burkina Faso</option> <option value="Burundi">Burundi</option> <option value="Cabo Verde">Cabo Verde</option> <option value="Cambodia">Cambodia</option> <option value="Cameroon">Cameroon</option> <option value="Canada">Canada</option> <option value="Central African Republic">Central African Republic</option> <option value="Chad">Chad</option> <option value="Chile">Chile</option> <option value="China">China</option> <option value="Colombia">Colombia</option> <option value="Comoros">Comoros</option> <option value="Congo">Congo</option> <option value="Costa Rica">Costa Rica</option> <option value="Croatia">Croatia</option> <option value="Cuba">Cuba</option> <option value="Cyprus">Cyprus</option> <option value="Czech Republic">Czech Republic</option> <option value="Denmark">Denmark</option> <option value="Djibouti">Djibouti</option> <option value="Dominica">Dominica</option> <option value="Dominican Republic">Dominican Republic</option> <option value="Ecuador">Ecuador</option> <option value="Egypt">Egypt</option> <option value="El Salvador">El Salvador</option> <option value="Equatorial Guinea">Equatorial Guinea</option> <option value="Eritrea">Eritrea</option> <option value="Estonia">Estonia</option> <option value="Eswatini">Eswatini</option> <option value="Ethiopia">Ethiopia</option> <option value="Fiji">Fiji</option> <option value="Finland">Finland</option> <option value="France">France</option> <option value="Gabon">Gabon</option> <option value="Gambia">Gambia</option> <option value="Georgia">Georgia</option> <option value="Germany">Germany</option> <option value="Ghana">Ghana</option> <option value="Greece">Greece</option> <option value="Grenada">Grenada</option> <option value="Guatemala">Guatemala</option> <option value="Guinea">Guinea</option> <option value="Guinea-Bissau">Guinea-Bissau</option> <option value="Guyana">Guyana</option> <option value="Haiti">Haiti</option> <option value="Honduras">Honduras</option> <option value="Hungary">Hungary</option> <option value="Iceland">Iceland</option> <option value="India">India</option> <option value="Indonesia">Indonesia</option> <option value="Iran">Iran</option> <option value="Iraq">Iraq</option> <option value="Ireland">Ireland</option> <option value="Israel">Israel</option> <option value="Italy">Italy</option> <option value="Jamaica">Jamaica</option> <option value="Japan">Japan</option> <option value="Jordan">Jordan</option> <option value="Kazakhstan">Kazakhstan</option> <option value="Kenya">Kenya</option> <option value="Kiribati">Kiribati</option> <option value="Korea, North">Korea, North</option> <option value="Korea, South">Korea, South</option> <option value="Kuwait">Kuwait</option> <option value="Kyrgyzstan">Kyrgyzstan</option> <option value="Laos">Laos</option> <option value="Latvia">Latvia</option> <option value="Lebanon">Lebanon</option> <option value="Lesotho">Lesotho</option> <option value="Liberia">Liberia</option> <option value="Libya">Libya</option> <option value="Liechtenstein">Liechtenstein</option> <option value="Lithuania">Lithuania</option> <option value="Luxembourg">Luxembourg</option> <option value="Madagascar">Madagascar</option> <option value="Malawi">Malawi</option> <option value="Malaysia">Malaysia</option> <option value="Maldives">Maldives</option> <option value="Mali">Mali</option> <option value="Malta">Malta</option> <option value="Marshall Islands">Marshall Islands</option> <option value="Mauritania">Mauritania</option> <option value="Mauritius">Mauritius</option> <option value="Mexico">Mexico</option> <option value="Micronesia">Micronesia</option> <option value="Moldova">Moldova</option> <option value="Monaco">Monaco</option> <option value="Mongolia">Mongolia</option> <option value="Montenegro">Montenegro</option> <option value="Morocco">Morocco</option> <option value="Mozambique">Mozambique</option> <option value="Myanmar">Myanmar</option> <option value="Namibia">Namibia</option> <option value="Nauru">Nauru</option> <option value="Nepal">Nepal</option> <option value="Netherlands">Netherlands</option> <option value="New Zealand">New Zealand</option> <option value="Nicaragua">Nicaragua</option> <option value="Niger">Niger</option> <option value="Nigeria">Nigeria</option> <option value="North Macedonia">North Macedonia</option> <option value="Norway">Norway</option> <option value="Oman">Oman</option> <option value="Pakistan">Pakistan</option> <option value="Palau">Palau</option> <option value="Panama">Panama</option> <option value="Papua New Guinea">Papua New Guinea</option> <option value="Paraguay">Paraguay</option> <option value="Peru">Peru</option> <option value="Philippines">Philippines</option> <option value="Poland">Poland</option> <option value="Portugal">Portugal</option> <option value="Qatar">Qatar</option> <option value="Romania">Romania</option> <option value="Russia">Russia</option> <option value="Rwanda">Rwanda</option> <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> <option value="Saint Lucia">Saint Lucia</option> <option value="Saint Vincent">Saint Vincent</option> <option value="Samoa">Samoa</option> <option value="San Marino">San Marino</option> <option value="Sao Tome and Principe">Sao Tome and Principe</option> <option value="Saudi Arabia">Saudi Arabia</option> <option value="Senegal">Senegal</option> <option value="Serbia">Serbia</option> <option value="Seychelles">Seychelles</option> <option value="Sierra Leone">Sierra Leone</option> <option value="Singapore">Singapore</option> <option value="Slovakia">Slovakia</option> <option value="Slovenia">Slovenia</option> <option value="Solomon Islands">Solomon Islands</option> <option value="Somalia">Somalia</option> <option value="South Africa">South Africa</option> <option value="South Sudan">South Sudan</option> <option value="Spain">Spain</option> <option value="Sri Lanka">Sri Lanka</option> <option value="Sudan">Sudan</option> <option value="Suriname">Suriname</option> <option value="Sweden">Sweden</option> <option value="Switzerland">Switzerland</option> <option value="Syria">Syria</option> <option value="Taiwan">Taiwan</option> <option value="Tajikistan">Tajikistan</option> <option value="Tanzania">Tanzania</option> <option value="Thailand">Thailand</option> <option value="Timor-Leste">Timor-Leste</option> <option value="Togo">Togo</option> <option value="Tonga">Tonga</option> <option value="Trinidad and Tobago">Trinidad and Tobago</option> <option value="Tunisia">Tunisia</option> <option value="Turkey">Turkey</option> <option value="Turkmenistan">Turkmenistan</option> <option value="Tuvalu">Tuvalu</option> <option value="Uganda">Uganda</option> <option value="Ukraine">Ukraine</option> <option value="United Arab Emirates">United Arab Emirates</option> <option value="United Kingdom">United Kingdom</option> <option value="United States">United States</option> <option value="Uruguay">Uruguay</option> <option value="Uzbekistan">Uzbekistan</option> <option value="Vanuatu">Vanuatu</option> <option value="Vatican City">Vatican City</option> <option value="Venezuela">Venezuela</option> <option value="Vietnam">Vietnam</option> <option value="Yemen">Yemen</option> <option value="Zambia">Zambia</option> <option value="Zimbabwe">Zimbabwe</option>
-                            </select>
+                            <h2>Submit New Post</h2>
+                            <label>Title of the post</label><input type="text" id="post-title">
+                            <label>Brief of the post</label><textarea id="post-brief" rows="3"></textarea>
+                            <label>Attach Image/Video URL</label><input type="text" id="post-media" placeholder="Link to your image/video">
+                            <button class="btn-main" onclick="submitPost()">Submit for Recognition</button>
                         </div>
-                        <div><label>School Name</label><input type="text" placeholder="University/School Name"></div>
-                        <div class="full-width"><label>School City</label><input type="text" placeholder="City"></div>
-                        <div class="full-width">
-                            <label>Tell us about yourself</label>
-                            <textarea rows="4" maxlength="600" placeholder="Tell us about yourself..."></textarea>
+                        <div>
+                            <h2>Posts Submitted</h2>
+                            <div id="submitted-posts-list">
+                                <p style="color:#666; font-style:italic;">No posts submitted yet.</p>
+                            </div>
                         </div>
                     </div>
-                    <button class="btn-login" style="margin-top:20px; width:200px;">Save Profile</button>
+                </div>
+
+                <div id="view-h" class="hidden">
+                    <h2>How to gain points</h2>
+                    <div class="point-rule">
+                        <h3>✅ Complete Challenges</h3>
+                        <p>Finish tasks listed in the "My Tasks" tab. Points are awarded based on the complexity of the task once verified by the community manager.</p>
+                    </div>
+                    <div class="point-rule">
+                        <h3>📢 Recommend Posts</h3>
+                        <p>Engage with your peers. Recommending and commenting on high-quality posts in the community portal earns you 10 points per interaction.</p>
+                    </div>
+                    <div class="point-rule">
+                        <h3>📱 Social Media Sharing</h3>
+                        <p>Share program updates or your own success stories on LinkedIn or Instagram. Tag the program and submit your link in the "Get Recognized" tab to earn 50 points.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,7 +171,6 @@
 <script>
     const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
     let csvData = [];
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString();
 
     async function processLogin() {
         const email = document.getElementById('user-email').value.trim().toLowerCase();
@@ -179,8 +186,9 @@
                 document.getElementById('display-name').innerText = user[0];
                 loadTasks(email);
                 loadLeaderboard();
+                displayStoredPosts();
             } else { alert("User not found."); }
-        } catch (e) { alert("Error loading data."); }
+        } catch (e) { alert("Data error."); }
     }
 
     function loadTasks(email) {
@@ -188,7 +196,7 @@
         tbody.innerHTML = "";
         csvData.slice(1).forEach(row => {
             if(row[1] && row[1].toLowerCase().trim() === email) {
-                tbody.innerHTML += `<tr><td><b>${row[2]}</b></td><td>${row[3]}</td><td><span class="badge-points">${row[4]}</span></td><td>${row[5]}</td></tr>`;
+                tbody.innerHTML += `<tr><td><b>${row[2]}</b></td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]}</td></tr>`;
             }
         });
     }
@@ -207,13 +215,46 @@
         });
     }
 
+    function submitPost() {
+        const title = document.getElementById('post-title').value;
+        const brief = document.getElementById('post-brief').value;
+        const media = document.getElementById('post-media').value || 'https://via.placeholder.com/80';
+        
+        if(!title || !brief) return alert("Fill in the title and brief.");
+
+        const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
+        posts.push({ title, brief, media });
+        localStorage.setItem('myPosts', JSON.stringify(posts));
+        
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-brief').value = '';
+        document.getElementById('post-media').value = '';
+        displayStoredPosts();
+    }
+
+    function displayStoredPosts() {
+        const list = document.getElementById('submitted-posts-list');
+        const posts = JSON.parse(localStorage.getItem('myPosts') || '[]');
+        if(posts.length === 0) return;
+        list.innerHTML = posts.map(p => `
+            <div class="post-card">
+                <img src="${p.media}" class="post-thumb" onerror="this.src='https://via.placeholder.com/80'">
+                <div>
+                    <div style="font-weight:bold; color:var(--blue);">${p.title}</div>
+                    <div style="font-size:12px; color:#666;">${p.brief}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
     function tab(name) {
-        document.getElementById('view-t').classList.toggle('hidden', name !== 'tasks');
-        document.getElementById('view-l').classList.toggle('hidden', name !== 'leaderboard');
-        document.getElementById('view-p').classList.toggle('hidden', name !== 'profile');
-        document.getElementById('btn-t').classList.toggle('active', name === 'tasks');
-        document.getElementById('btn-l').classList.toggle('active', name === 'leaderboard');
-        document.getElementById('btn-p').classList.toggle('active', name === 'profile');
+        const views = ['t', 'l', 'p', 'r', 'h'];
+        views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+        document.getElementById('view-' + name[0]).classList.remove('hidden');
+        
+        const btns = ['t', 'l', 'p', 'r', 'h'];
+        btns.forEach(b => document.getElementById('btn-' + b).classList.remove('active'));
+        document.getElementById('btn-' + name[0]).classList.add('active');
     }
 </script>
 </body>
