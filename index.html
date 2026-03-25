@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Champions Portal</title>
+    <title>Students Champions Program Dashboard</title>
     <style>
-        :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; --border-color: #d1d5db; }
+        :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--light-bg); color: #333; }
         .hidden { display: none !important; }
         
@@ -19,39 +19,37 @@
         #dashboard-screen { display: flex; min-height: 100vh; }
 
         /* SIDEBAR (Left Pane) */
-        .sidebar { 
-            width: 260px; 
-            background: var(--blue); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            flex-shrink: 0; 
-            border-right: 2px solid #ccc; /* THE GRAY SEPARATION LINE */
-        }
+        .sidebar { width: 260px; background: var(--blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 2px solid #ccc; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Company Logo Placeholder */
+        .company-logo { max-width: 100%; height: auto; margin-bottom: 10px; }
+
         .nav-list { flex-grow: 1; padding-top: 20px; }
-        .nav-item { 
-            width: 100%; padding: 15px 25px; border: none; background: none; color: white; 
-            text-align: left; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
+        .nav-item { width: 100%; padding: 15px 25px; border: none; background: none; color: white; text-align: left; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .nav-item:hover { background: var(--dark); }
         .nav-item.active { background: var(--light-bg); color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
+
+        /* Badge Image Area */
+        .badge-area { padding: 20px; text-align: center; }
+        .champion-badge-img { width: 120px; height: auto; opacity: 0.9; }
+
         .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
 
         /* CONTENT AREA (Right Pane) */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .top-banner { width: 100%; padding: 60px 0; background-color: var(--blue); display: flex; align-items: center; justify-content: center; text-align: center; }
-        .top-banner h1 { color: white; margin: 0; font-size: 38px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .top-banner h1 { color: white; margin: 0; font-size: 34px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         
         header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
         .container { padding: 40px; }
 
-        /* PROFILE FORM STYLING */
+        /* PROFILE GRID */
         .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
         label { font-weight: bold; font-size: 14px; color: var(--blue); }
 
-        /* TABLES & UI */
+        /* TABLES */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #f1f5f9; color: var(--blue); text-transform: uppercase; font-size: 12px; }
@@ -73,14 +71,18 @@
         
         <div class="sidebar">
             <div class="sidebar-header">
-                <div style="font-size: 20px; font-weight: bold;">CHAMPIONS</div>
-                <div style="font-size: 12px; opacity: 0.7;">STUDENT PROGRAM</div>
+                <img src="company-logo.png" alt="Company Logo" class="company-logo" onerror="this.style.display='none'">
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">STUDENT PROGRAM</div>
             </div>
             
             <div class="nav-list">
                 <button id="btn-t" class="nav-item active" onclick="tab('tasks')">📋 My Tasks</button>
                 <button id="btn-l" class="nav-item" onclick="tab('leaderboard')">🏆 Leaderboard</button>
                 <button id="btn-p" class="nav-item" onclick="tab('profile')">👤 My Profile</button>
+            </div>
+
+            <div class="badge-area">
+                <img src="champion-badge.png" alt="Champion Badge" class="champion-badge-img" onerror="this.style.display='none'">
             </div>
 
             <div class="sidebar-footer">
@@ -90,7 +92,7 @@
 
         <div class="main-content">
             <div class="top-banner">
-                <h1>Student Champions Dashboard</h1>
+                <h1>Students Champions Program Dashboard</h1>
             </div>
 
             <header>
@@ -116,44 +118,23 @@
                 </div>
 
                 <div id="view-p" class="hidden">
-                    <h2 style="margin-top:0">Complete Your Profile</h2>
+                    <h2 style="margin-top:0">My Profile</h2>
                     <div class="profile-grid">
-                        <div>
-                            <label>First Name</label>
-                            <input type="text" placeholder="Enter First Name">
-                        </div>
-                        <div>
-                            <label>Last Name</label>
-                            <input type="text" placeholder="Enter Last Name">
-                        </div>
-                        <div class="full-width">
-                            <label>3DEXPERIENCE Email ID</label>
-                            <input type="email" placeholder="email@3ds.com">
-                        </div>
+                        <div><label>First Name</label><input type="text" placeholder="First Name"></div>
+                        <div><label>Last Name</label><input type="text" placeholder="Last Name"></div>
+                        <div class="full-width"><label>3DEXPERIENCE Email ID</label><input type="email" placeholder="email@domain.com"></div>
                         <div>
                             <label>Country</label>
                             <select id="country-list">
                                 <option value="">Select Country</option>
-                                <option value="USA">United States</option>
-                                <option value="India">India</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="France">France</option>
-                                <option value="Germany">Germany</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Australia">Australia</option>
-                                </select>
+                                <option value="Afghanistan">Afghanistan</option> <option value="Albania">Albania</option> <option value="Algeria">Algeria</option> <option value="Andorra">Andorra</option> <option value="Angola">Angola</option> <option value="Antigua and Barbuda">Antigua and Barbuda</option> <option value="Argentina">Argentina</option> <option value="Armenia">Armenia</option> <option value="Australia">Australia</option> <option value="Austria">Austria</option> <option value="Azerbaijan">Azerbaijan</option> <option value="Bahamas">Bahamas</option> <option value="Bahrain">Bahrain</option> <option value="Bangladesh">Bangladesh</option> <option value="Barbados">Barbados</option> <option value="Belarus">Belarus</option> <option value="Belgium">Belgium</option> <option value="Belize">Belize</option> <option value="Benin">Benin</option> <option value="Bhutan">Bhutan</option> <option value="Bolivia">Bolivia</option> <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option> <option value="Botswana">Botswana</option> <option value="Brazil">Brazil</option> <option value="Brunei">Brunei</option> <option value="Bulgaria">Bulgaria</option> <option value="Burkina Faso">Burkina Faso</option> <option value="Burundi">Burundi</option> <option value="Cabo Verde">Cabo Verde</option> <option value="Cambodia">Cambodia</option> <option value="Cameroon">Cameroon</option> <option value="Canada">Canada</option> <option value="Central African Republic">Central African Republic</option> <option value="Chad">Chad</option> <option value="Chile">Chile</option> <option value="China">China</option> <option value="Colombia">Colombia</option> <option value="Comoros">Comoros</option> <option value="Congo">Congo</option> <option value="Costa Rica">Costa Rica</option> <option value="Croatia">Croatia</option> <option value="Cuba">Cuba</option> <option value="Cyprus">Cyprus</option> <option value="Czech Republic">Czech Republic</option> <option value="Denmark">Denmark</option> <option value="Djibouti">Djibouti</option> <option value="Dominica">Dominica</option> <option value="Dominican Republic">Dominican Republic</option> <option value="Ecuador">Ecuador</option> <option value="Egypt">Egypt</option> <option value="El Salvador">El Salvador</option> <option value="Equatorial Guinea">Equatorial Guinea</option> <option value="Eritrea">Eritrea</option> <option value="Estonia">Estonia</option> <option value="Eswatini">Eswatini</option> <option value="Ethiopia">Ethiopia</option> <option value="Fiji">Fiji</option> <option value="Finland">Finland</option> <option value="France">France</option> <option value="Gabon">Gabon</option> <option value="Gambia">Gambia</option> <option value="Georgia">Georgia</option> <option value="Germany">Germany</option> <option value="Ghana">Ghana</option> <option value="Greece">Greece</option> <option value="Grenada">Grenada</option> <option value="Guatemala">Guatemala</option> <option value="Guinea">Guinea</option> <option value="Guinea-Bissau">Guinea-Bissau</option> <option value="Guyana">Guyana</option> <option value="Haiti">Haiti</option> <option value="Honduras">Honduras</option> <option value="Hungary">Hungary</option> <option value="Iceland">Iceland</option> <option value="India">India</option> <option value="Indonesia">Indonesia</option> <option value="Iran">Iran</option> <option value="Iraq">Iraq</option> <option value="Ireland">Ireland</option> <option value="Israel">Israel</option> <option value="Italy">Italy</option> <option value="Jamaica">Jamaica</option> <option value="Japan">Japan</option> <option value="Jordan">Jordan</option> <option value="Kazakhstan">Kazakhstan</option> <option value="Kenya">Kenya</option> <option value="Kiribati">Kiribati</option> <option value="Korea, North">Korea, North</option> <option value="Korea, South">Korea, South</option> <option value="Kuwait">Kuwait</option> <option value="Kyrgyzstan">Kyrgyzstan</option> <option value="Laos">Laos</option> <option value="Latvia">Latvia</option> <option value="Lebanon">Lebanon</option> <option value="Lesotho">Lesotho</option> <option value="Liberia">Liberia</option> <option value="Libya">Libya</option> <option value="Liechtenstein">Liechtenstein</option> <option value="Lithuania">Lithuania</option> <option value="Luxembourg">Luxembourg</option> <option value="Madagascar">Madagascar</option> <option value="Malawi">Malawi</option> <option value="Malaysia">Malaysia</option> <option value="Maldives">Maldives</option> <option value="Mali">Mali</option> <option value="Malta">Malta</option> <option value="Marshall Islands">Marshall Islands</option> <option value="Mauritania">Mauritania</option> <option value="Mauritius">Mauritius</option> <option value="Mexico">Mexico</option> <option value="Micronesia">Micronesia</option> <option value="Moldova">Moldova</option> <option value="Monaco">Monaco</option> <option value="Mongolia">Mongolia</option> <option value="Montenegro">Montenegro</option> <option value="Morocco">Morocco</option> <option value="Mozambique">Mozambique</option> <option value="Myanmar">Myanmar</option> <option value="Namibia">Namibia</option> <option value="Nauru">Nauru</option> <option value="Nepal">Nepal</option> <option value="Netherlands">Netherlands</option> <option value="New Zealand">New Zealand</option> <option value="Nicaragua">Nicaragua</option> <option value="Niger">Niger</option> <option value="Nigeria">Nigeria</option> <option value="North Macedonia">North Macedonia</option> <option value="Norway">Norway</option> <option value="Oman">Oman</option> <option value="Pakistan">Pakistan</option> <option value="Palau">Palau</option> <option value="Panama">Panama</option> <option value="Papua New Guinea">Papua New Guinea</option> <option value="Paraguay">Paraguay</option> <option value="Peru">Peru</option> <option value="Philippines">Philippines</option> <option value="Poland">Poland</option> <option value="Portugal">Portugal</option> <option value="Qatar">Qatar</option> <option value="Romania">Romania</option> <option value="Russia">Russia</option> <option value="Rwanda">Rwanda</option> <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option> <option value="Saint Lucia">Saint Lucia</option> <option value="Saint Vincent">Saint Vincent</option> <option value="Samoa">Samoa</option> <option value="San Marino">San Marino</option> <option value="Sao Tome and Principe">Sao Tome and Principe</option> <option value="Saudi Arabia">Saudi Arabia</option> <option value="Senegal">Senegal</option> <option value="Serbia">Serbia</option> <option value="Seychelles">Seychelles</option> <option value="Sierra Leone">Sierra Leone</option> <option value="Singapore">Singapore</option> <option value="Slovakia">Slovakia</option> <option value="Slovenia">Slovenia</option> <option value="Solomon Islands">Solomon Islands</option> <option value="Somalia">Somalia</option> <option value="South Africa">South Africa</option> <option value="South Sudan">South Sudan</option> <option value="Spain">Spain</option> <option value="Sri Lanka">Sri Lanka</option> <option value="Sudan">Sudan</option> <option value="Suriname">Suriname</option> <option value="Sweden">Sweden</option> <option value="Switzerland">Switzerland</option> <option value="Syria">Syria</option> <option value="Taiwan">Taiwan</option> <option value="Tajikistan">Tajikistan</option> <option value="Tanzania">Tanzania</option> <option value="Thailand">Thailand</option> <option value="Timor-Leste">Timor-Leste</option> <option value="Togo">Togo</option> <option value="Tonga">Tonga</option> <option value="Trinidad and Tobago">Trinidad and Tobago</option> <option value="Tunisia">Tunisia</option> <option value="Turkey">Turkey</option> <option value="Turkmenistan">Turkmenistan</option> <option value="Tuvalu">Tuvalu</option> <option value="Uganda">Uganda</option> <option value="Ukraine">Ukraine</option> <option value="United Arab Emirates">United Arab Emirates</option> <option value="United Kingdom">United Kingdom</option> <option value="United States">United States</option> <option value="Uruguay">Uruguay</option> <option value="Uzbekistan">Uzbekistan</option> <option value="Vanuatu">Vanuatu</option> <option value="Vatican City">Vatican City</option> <option value="Venezuela">Venezuela</option> <option value="Vietnam">Vietnam</option> <option value="Yemen">Yemen</option> <option value="Zambia">Zambia</option> <option value="Zimbabwe">Zimbabwe</option>
+                            </select>
                         </div>
-                        <div>
-                            <label>School Name</label>
-                            <input type="text" placeholder="University/School Name">
-                        </div>
+                        <div><label>School Name</label><input type="text" placeholder="University/School Name"></div>
+                        <div class="full-width"><label>School City</label><input type="text" placeholder="City"></div>
                         <div class="full-width">
-                            <label>School City</label>
-                            <input type="text" placeholder="City">
-                        </div>
-                        <div class="full-width">
-                            <label>About yourself in 100 words</label>
-                            <textarea rows="4" maxlength="600" placeholder="Tell us about your journey..."></textarea>
+                            <label>Tell us about yourself</label>
+                            <textarea rows="4" maxlength="600" placeholder="Tell us about yourself..."></textarea>
                         </div>
                     </div>
                     <button class="btn-login" style="margin-top:20px; width:200px;">Save Profile</button>
@@ -165,7 +146,6 @@
 <script>
     const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
     let csvData = [];
-
     document.getElementById('current-date').innerText = new Date().toLocaleDateString();
 
     async function processLogin() {
