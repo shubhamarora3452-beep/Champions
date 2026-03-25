@@ -5,42 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions Portal</title>
     <style>
-        :root { --blue: #00467f; }
-        body { font-family: sans-serif; margin: 0; background: #f4f4f4; color: #333; }
+        :root { --blue: #00467f; --dark: #002e54; --light-bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--light-bg); color: #333; }
         .hidden { display: none !important; }
         
-        /* Login Screen */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-        
-        /* Hero Banner Section */
+        /* 1. LOGIN SCREEN */
+        #login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: #eee; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-login { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 6px; }
+
+        /* 2. MAIN DASHBOARD LAYOUT */
+        #dashboard-screen { display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-list { flex-grow: 1; padding-top: 20px; }
+        .nav-item { 
+            width: 100%; padding: 15px 25px; border: none; background: none; color: white; 
+            text-align: left; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .nav-item:hover { background: var(--dark); }
+        .nav-item.active { background: white; color: var(--blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        /* CONTENT AREA */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
         .hero-banner {
-            width: 100%;
-            height: 200px; /* Adjusted height for your 1101x785 image */
-            background: url('Dashboard_Banner.png') no-repeat center center; 
-            background-size: cover;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            width: 100%; height: 200px;
+            background: url('your-banner.jpg') no-repeat center center; 
+            background-size: cover; border-bottom: 4px solid var(--blue);
         }
         
-        /* Dashboard Header */
-        header { background: var(--blue); color: white; padding: 15px; text-align: center; position: relative; }
-        .nav { display: flex; background: #ddd; }
-        .tab { flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: bold; }
-        .tab.active { background: white; border-bottom: 4px solid var(--blue); }
+        header { padding: 20px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .container { padding: 40px; }
 
-        .container { padding: 20px; max-width: 900px; margin: auto; background: white; min-height: 60vh; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #eee; }
-
-        input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn { background: var(--blue); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; font-weight: bold; }
-        .logout { position: absolute; right: 10px; top: 15px; background: none; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        /* TABLES & ICONS */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f5f9; color: var(--blue); text-transform: uppercase; font-size: 12px; }
+        
+        .rank-icon { font-size: 18px; margin-right: 5px; }
+        .badge-points { background: #e1effe; color: #1e429f; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: bold; }
+        
+        .logout { background: #eee; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -49,40 +58,52 @@
         <div class="login-card">
             <h2 style="color:var(--blue)">Champion Login</h2>
             <input type="email" id="user-email" placeholder="email@example.com">
-            <button class="btn" onclick="processLogin()">Access Dashboard</button>
+            <button class="btn-login" onclick="processLogin()">Access Dashboard</button>
         </div>
     </div>
 
     <div id="dashboard-screen" class="hidden">
-        <div class="hero-banner">
-            <h1 style="font-size: 3em;">STUDENT CHAMPIONS DASHBOARD</h1>
-        </div>
-
-        <header>
-            <button class="logout" onclick="location.reload()">LOGOUT</button>
-            <p style="margin:0;">Welcome back, <span id="display-name" style="font-weight:bold;">...</span></p>
-        </header>
-
-        <div class="nav">
-            <button id="btn-t" class="tab active" onclick="tab('tasks')">MY TASKS</button>
-            <button id="btn-l" class="tab" onclick="tab('leaderboard')">LEADERBOARD</button>
-        </div>
-
-        <div class="container">
-            <div id="view-t">
-                <h3>Your Active Challenges</h3>
-                <table>
-                    <thead><tr><th>Task</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
-                    <tbody id="table-t"></tbody>
-                </table>
+        
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px;">CHAMPIONS</div>
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">STUDENT PROGRAM</div>
+            </div>
+            
+            <div class="nav-list">
+                <button id="btn-t" class="nav-item active" onclick="tab('tasks')">📋 My Tasks</button>
+                <button id="btn-l" class="nav-item" onclick="tab('leaderboard')">🏆 Leaderboard</button>
             </div>
 
-            <div id="view-l" class="hidden">
-                <h3>Global Leaderboard</h3>
-                <table>
-                    <thead><tr><th>Rank</th><th>Name</th><th>Total Points</th></tr></thead>
-                    <tbody id="table-l"></tbody>
-                </table>
+            <div class="sidebar-footer">
+                <button class="logout" style="width:100%" onclick="location.reload()">Log Out</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="hero-banner"></div>
+
+            <header>
+                <div>Welcome back, <span id="display-name" style="font-weight:bold; color:var(--blue);">...</span></div>
+                <div id="current-date" style="font-size: 12px; color: #666;"></div>
+            </header>
+
+            <div class="container">
+                <div id="view-t">
+                    <h2 style="margin-top:0">Your Active Challenges</h2>
+                    <table>
+                        <thead><tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
+                        <tbody id="table-t"></tbody>
+                    </table>
+                </div>
+
+                <div id="view-l" class="hidden">
+                    <h2 style="margin-top:0">Global Champion Rankings</h2>
+                    <table>
+                        <thead><tr><th>Rank</th><th>Name</th><th>Total Points</th></tr></thead>
+                        <tbody id="table-l"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -90,6 +111,8 @@
 <script>
     const SHEET_LINK = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIJxgFFLAm8A-BVBtuuqAYTrmgAldjZT0wb3afoBpVOg95OV-Ug0xL2paE-koTnCcKduFaW2NfM0Hy/pub?output=csv";
     let csvData = [];
+
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     async function processLogin() {
         const email = document.getElementById('user-email').value.trim().toLowerCase();
@@ -111,7 +134,7 @@
                 alert("Email not found.");
             }
         } catch (error) {
-            alert("Error: Check connection.");
+            alert("Connection error.");
         }
     }
 
@@ -123,8 +146,8 @@
                 tbody.innerHTML += `<tr>
                     <td><b>${row[2] || 'Task'}</b></td>
                     <td>${row[3] || 'General'}</td>
-                    <td>${row[4] || '0'}</td>
-                    <td>${row[5] || 'Active'}</td>
+                    <td><span class="badge-points">${row[4] || '0'}</span></td>
+                    <td style="color:green; font-weight:bold;">${row[5] || 'Active'}</td>
                 </tr>`;
             }
         });
@@ -135,13 +158,22 @@
         tbody.innerHTML = "";
         let totals = {};
         csvData.slice(1).forEach(row => {
-            let name = row[0];
-            let pts = parseInt(row[4]) || 0;
+            let name = row[0], pts = parseInt(row[4]) || 0;
             if(name) totals[name] = (totals[name] || 0) + pts;
         });
         const sorted = Object.keys(totals).sort((a,b) => totals[b] - totals[a]);
+        
         sorted.forEach((name, i) => {
-            tbody.innerHTML += `<tr><td>#${i+1}</td><td>${name}</td><td><b>${totals[name]}</b></td></tr>`;
+            let rankDisplay = `#${i+1}`;
+            if(i === 0) rankDisplay = `<span class="rank-icon">🏆</span> #1`;
+            if(i === 1) rankDisplay = `<span class="rank-icon">🥈</span> #2`;
+            if(i === 2) rankDisplay = `<span class="rank-icon">🥉</span> #3`;
+
+            tbody.innerHTML += `<tr>
+                <td>${rankDisplay}</td>
+                <td>${name}</td>
+                <td><span class="badge-points">${totals[name]}</span></td>
+            </tr>`;
         });
     }
 
@@ -154,7 +186,3 @@
 </script>
 </body>
 </html>
-
-
-
-
