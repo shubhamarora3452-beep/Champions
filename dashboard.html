@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Edu Student Champions</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #dashboard-wrapper { display: flex; min-height: 100vh; }
+        
+        /* Sidebar Layout */
+        .sidebar { width: 260px; background: var(--Dassault_Blue); color: white; display: flex; flex-direction: column; flex-shrink: 0; position: relative; }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-logo { max-width: 100%; height: auto; }
+        .nav-list { flex-grow: 1; padding-top: 20px; }
+        .nav-item { width: 100%; padding: 15px 25px; border: none; background: none; color: white; text-align: left; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+        .nav-item:hover { background: var(--dark-blue); }
+        .nav-item.active { background: var(--light-bg); color: var(--Dassault_Blue); border-radius: 30px 0 0 30px; margin-left: 10px; }
+
+        /* Badge Area */
+        .badge-area { position: absolute; bottom: 7.5cm; left: 0; right: 0; display: flex; justify-content: center; pointer-events: none; }
+        .shimmer-wrapper { position: relative; width: 173px; overflow: hidden; border-radius: 12px; }
+        .champion-badge-img { width: 100%; height: auto; display: block; }
+        .shimmer-wrapper::after {
+            content: ""; position: absolute; top: 0; left: -150%; width: 150%; height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg); animation: sparkle 3.5s infinite;
+        }
+        @keyframes sparkle { 0% { left: -150%; } 25% { left: 100%; } 100% { left: 100%; } }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top-banner { width: 100%; padding: 40px 0; background-color: var(--Dassault_Blue); text-align: center; color: white;}
+        .top-banner h1 { margin: 0; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
+        
+        header { padding: 15px 40px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .logout-link { color: #d63031; font-size: 13px; font-weight: bold; background: none; border: 1px solid #d63031; padding: 6px 15px; border-radius: 4px; cursor: pointer; transition: 0.2s;}
+        .logout-link:hover { background: #d63031; color: white; }
+        
+        .container { padding: 30px 40px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+    <div id="dashboard-wrapper" style="display: none;">
+        
+        <div class="sidebar">
+            <div class="sidebar-header"><img src="company-logo.png" class="sidebar-logo" onerror="this.style.display='none'"></div>
+            <div class="nav-list">
+                <button id="btn-t" class="nav-item active" onclick="tab('tasks')">📋 My Tasks</button>
+                <button id="btn-l" class="nav-item" onclick="tab('leaderboard')">🏆 Leaderboard</button>
+                <button id="btn-p" class="nav-item" onclick="tab('profile')">👤 My Profile</button>
+                <button id="btn-r" class="nav-item" onclick="tab('recognized')">📢 Get Recognized</button>
+                <button id="btn-h" class="nav-item" onclick="tab('howtopoints')">💡 Gain Points</button>
+            </div>
+            <div class="badge-area">
+                <div class="shimmer-wrapper"><img src="champion-badge.png" class="champion-badge-img" onerror="this.style.display='none'"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-banner"><h1>Students Champions Program Dashboard</h1></div>
+            
+            <header>
+                <div>WELCOME back, <span id="display-name" style="font-weight:bold; color:var(--Dassault_Blue);">Student</span>!</div>
+                <button class="logout-link" onclick="handleLogout()">LOGOUT</button>
+            </header>
+
+            <div class="container">
+                <div id="view-t">
+                    <div class="card">
+                        <h2 style="margin-top:0;">Active Challenges</h2>
+                        <table>
+                            <thead><tr><th>Task Name</th><th>Category</th><th>Points</th><th>Status</th></tr></thead>
+                            <tbody id="table-t">
+                                <tr><td colspan="4">Loading tasks...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-p" class="hidden">
+                    <div class="card">
+                        <h2 style="margin-top:0;">My Profile</h2>
+                        <div class="grid-2">
+                            <div><label>First Name</label><input type="text"></div>
+                            <div><label>Last Name</label><input type="text"></div>
+                            <div class="full-width"><label>3DEXPERIENCE Email</label><input type="email" id="profile-email" readonly style="background:#eee;"></div>
+                            <div><label>Instagram Handle</label><input type="text" placeholder="@username"></div>
+                            <div><label>LinkedIn Link</label><input type="text" placeholder="Profile URL"></div>
+                            <div><label>School Name</label><input type="text"></div>
+                            <div><label>School City</label><input type="text"></div>
+                            <div class="full-width"><label>Tell us about yourself</label><textarea rows="3"></textarea></div>
+                        </div>
+                        <button class="btn-main" style="width:auto; margin-top:15px;">Save Profile Updates</button>
+                    </div>
+                </div>
+                
+                </div>
+        </div>
+    </div>
+
+<script>
+    // Security Check on Load
+    window.onload = () => {
+        const sessionData = sessionStorage.getItem('championAuth');
+        if (!sessionData) {
+            // Kick them out if they bypassed login
+            window.location.href = "login.html";
+        } else {
+            const user = JSON.parse(sessionData);
+            document.getElementById('dashboard-wrapper').style.display = 'flex';
+            document.getElementById('display-name').innerText = user.name;
+            document.getElementById('profile-email').value = user.email; // Pre-fill email
+            
+            // Note: You will move your loadTasks() and loadLeaderboard() logic here.
+            // They should also be refactored to use fetch() to Code.gs in the future.
+        }
+    };
+
+    function handleLogout() {
+        sessionStorage.removeItem('championAuth');
+        window.location.href = "login.html";
+    }
+
+    function tab(name) {
+        const keyMap = { 'recognized': 'r', 'howtopoints': 'h', 'tasks': 't', 'leaderboard': 'l', 'profile': 'p' };
+        const key = keyMap[name] || name[0];
+        ['t', 'p', 'l', 'r', 'h'].forEach(v => {
+            const el = document.getElementById('view-' + v);
+            if(el) el.classList.add('hidden');
+        });
+        document.getElementById('view-' + key).classList.remove('hidden');
+        
+        ['t', 'p', 'l', 'r', 'h'].forEach(b => document.getElementById('btn-' + b).classList.remove('active'));
+        document.getElementById('btn-' + key).classList.add('active');
+    }
+</script>
+</body>
+</html>
