@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Edu Student Champions</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { display: flex; flex-direction: column; height: 100vh; }
+        .login-header-bar {
+            width: 100%; height: 80px; background: var(--Dassault_Blue);
+            display: flex; align-items: center; padding: 0 30px; box-sizing: border-box; position: relative;
+        }
+        .login-bar-logo { height: 50px; width: auto; }
+        .login-bar-title {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            color: white; font-size: 24px; font-weight: 800; text-transform: uppercase; text-align: center;
+        }
+        .login-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 350px; text-align: center; }
+        
+        #loading-container { width: 100%; background: #eee; height: 4px; border-radius: 2px; margin-top: 15px; overflow: hidden; display: none; }
+        #loading-bar { width: 0%; height: 100%; background: var(--Dassault_Blue); transition: width 0.4s ease; }
+        .error-msg { color: #d63031; font-size: 13px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-header-bar">
+        <img src="company-logo.png" alt="Company Logo" class="login-bar-logo" onerror="this.style.display='none'">
+        <div class="login-bar-title">Edu Student Champions Program</div>
+    </div>
+    
+    <div class="login-content">
+        <div class="card login-card">
+            <h2 style="margin:0 0 20px 0; color:var(--Dassault_Blue);">Sign In</h2>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px;">Welcome! Please access your dashboard.</p>
+            
+            <input type="email" id="user-email" placeholder="Enter your registered email">
+            <button class="btn-main" onclick="authenticateUser()">Access Dashboard</button>
+            
+            <div id="loading-container"><div id="loading-bar"></div></div>
+            <div id="error-message" class="error-msg"></div>
+        </div>
+    </div>
+
+<script>
+    // Replace with your published Google Apps Script Web App URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbzxG5rFp9mEEHIjf4HTspjdMtSgqH4v7YCWjatuu9_yT6z0ESPg-0U4c1DtnlGBOeHpCA/exec"; 
+
+    // Redirect if already logged in
+    window.onload = () => {
+        if (sessionStorage.getItem('championAuth')) {
+            window.location.href = "dashboard.html";
+        }
+    };
+
+    async function authenticateUser() {
+        const email = document.getElementById('user-email').value.trim();
+        const errorBox = document.getElementById('error-message');
+        const loadContainer = document.getElementById('loading-container');
+        const loadBar = document.getElementById('loading-bar');
+
+        if(!email) {
+            errorBox.innerText = "Please enter an email.";
+            errorBox.style.display = "block";
+            return;
+        }
+
+        errorBox.style.display = "none";
+        loadContainer.style.display = 'block';
+        loadBar.style.width = "40%";
+
+        try {
+            // Send data securely to backend
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ email: email })
+            });
+            
+            loadBar.style.width = "80%";
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                loadBar.style.width = "100%";
+                // Create a secure session token (frontend only for now)
+                sessionStorage.setItem('championAuth', JSON.stringify(result.user));
+                setTimeout(() => { window.location.href = "dashboard.html"; }, 400);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            loadContainer.style.display = 'none';
+            loadBar.style.width = "0%";
+            errorBox.innerText = error.message || "Connection failed. Try again.";
+            errorBox.style.display = "block";
+        }
+    }
+</script>
+</body>
+</html>
